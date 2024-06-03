@@ -1,5 +1,4 @@
 ﻿using Internship.Model;
-using ApiApp.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,11 +39,12 @@ namespace Internship.Controllers
             }
             else
                 return BadRequest();
-        }
 
+        }
         [HttpPut]
         public IActionResult UpdateDepartment(Department department)
         {
+
             if (ModelState.IsValid)
             {
                 var db = new APIDbContext();

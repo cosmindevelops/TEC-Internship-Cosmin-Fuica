@@ -1,5 +1,4 @@
 ﻿using Internship.Model;
-using ApiApp.Data;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
