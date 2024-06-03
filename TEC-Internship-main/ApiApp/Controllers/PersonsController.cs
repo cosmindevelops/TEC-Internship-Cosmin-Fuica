@@ -1,4 +1,5 @@
 ﻿using Internship.Model;
+using ApiApp.Data;
 using Internship.ObjectModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,8 +35,8 @@ namespace Internship.Controllers
                 return NotFound();
             else
                 return Ok(person);
-
         }
+
         [HttpPost]
         public IActionResult Post(Person person)
         {
@@ -49,10 +50,10 @@ namespace Internship.Controllers
             else
                 return BadRequest();
         }
+
         [HttpPut]
         public IActionResult UpdatePerson(Person person)
         {
-
             if (ModelState.IsValid)
             {
                 var db = new APIDbContext();
