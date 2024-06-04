@@ -1,8 +1,6 @@
 ﻿using ApiApp.Data.Config;
-using ApiApp.Model;
 using Internship.Model;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace ApiApp.Data;
 
@@ -15,6 +13,7 @@ public class APIDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<PersonDetails> PersonDetails { get; set; }
     public string DbPath { get; }
 
     public APIDbContext()
@@ -33,5 +32,6 @@ public class APIDbContext : DbContext
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+        modelBuilder.ApplyConfiguration(new PersonDetailsConfiguration());
     }
 }

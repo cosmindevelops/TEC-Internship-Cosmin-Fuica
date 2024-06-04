@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Internship.Model
+namespace Internship.Model;
+
+public class Salary
 {
-    public class Salary
+    public Salary()
     {
-        public Salary()
-        {
-            Persons = new HashSet<Person>();
-        }
-        [Key]
-        public int SalaryId { get; set; }
-        public int Amount { get; set; }
-        public virtual ICollection<Person> Persons { get; set; }
+        Persons = new HashSet<Person>();
     }
+
+    [Key]
+    public int SalaryId { get; set; }
+
+    public int Amount { get; set; }
+    public virtual ICollection<Person> Persons { get; set; }
 }

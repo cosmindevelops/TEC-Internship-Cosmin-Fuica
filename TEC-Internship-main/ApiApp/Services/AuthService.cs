@@ -1,7 +1,7 @@
 ﻿using ApiApp.Common.Dto;
 using ApiApp.Common.Exceptions;
 using ApiApp.Data;
-using ApiApp.Model;
+using Internship.Model;
 using ApiApp.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

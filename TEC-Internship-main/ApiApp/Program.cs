@@ -3,7 +3,7 @@ using ApiApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using ApiApp.Model;
+using Internship.Model;
 using Microsoft.AspNetCore.Identity;
 using ApiApp.Data;
 using Microsoft.EntityFrameworkCore;
