@@ -1,4 +1,4 @@
-﻿namespace ApiApp.Model;
+﻿namespace Internship.Model;
 
 public class Role
 {

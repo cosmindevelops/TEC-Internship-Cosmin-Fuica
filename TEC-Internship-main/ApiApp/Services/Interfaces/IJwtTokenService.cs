@@ -1,4 +1,4 @@
-﻿using ApiApp.Model;
+﻿using Internship.Model;
 
 namespace ApiApp.Services.Interfaces;
 

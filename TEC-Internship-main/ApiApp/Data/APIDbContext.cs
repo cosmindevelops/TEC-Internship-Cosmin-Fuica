@@ -1,13 +1,15 @@
 ﻿using ApiApp.Data.Config;
-using ApiApp.Model;
 using Internship.Model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace ApiApp.Data;
 
 public class APIDbContext : DbContext
 {
+    private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly string _dbPath;
+
     public DbSet<Person> Persons { get; set; }
     public DbSet<Position> Positions { get; set; }
     public DbSet<Salary> Salaries { get; set; }
@@ -15,16 +17,23 @@ public class APIDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<PersonDetails> PersonDetails { get; set; }
     public string DbPath { get; }
 
-    public APIDbContext()
+    public APIDbContext(DbContextOptions<APIDbContext> options, IPasswordHasher<User> passwordHasher, IConfiguration configuration)
+        : base(options)
     {
-        var path = "C:\\Users\\cosmin\\Documents\\GitHub\\TEC-Internship-Cosmin-Fuica\\TEC-Internship-main\\Database";
-        DbPath = Path.Join(path, "Internship.db");
+        _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
+        _dbPath = configuration.GetValue<string>("DatabasePath");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-    => options.UseSqlite($"Data Source={DbPath}");
+    {
+        if (!string.IsNullOrEmpty(_dbPath))
+        {
+            options.UseSqlite($"Data Source={_dbPath}");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -33,5 +42,64 @@ public class APIDbContext : DbContext
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
         modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
+        modelBuilder.ApplyConfiguration(new PersonDetailsConfiguration());
+    }
+
+    public static void SeedData(APIDbContext context)
+    {
+        Console.WriteLine("Starting database seeding...");
+
+        // Seed roles
+        var roles = new List<Role>
+        {
+            new Role { Id = Guid.NewGuid(), Name = "Admin" },
+            new Role { Id = Guid.NewGuid(), Name = "User" }
+        };
+
+        foreach (var role in roles)
+        {
+            if (!context.Roles.Any(r => r.Name == role.Name))
+            {
+                context.Roles.Add(role);
+                Console.WriteLine($"Role {role.Name} added.");
+            }
+        }
+
+        context.SaveChanges();
+
+        // Ensure the roles are saved before proceeding
+        var adminRole = context.Roles.FirstOrDefault(r => r.Name == "Admin");
+        if (adminRole == null)
+        {
+            Console.WriteLine("Admin role could not be found.");
+            return;
+        }
+
+        // Seed admin user
+        if (!context.Users.Any(u => u.Email == "admin@gmail.com"))
+        {
+            var adminUser = new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "admin",
+                Email = "admin@gmail.com",
+                PasswordHash = context._passwordHasher.HashPassword(null, "password123")
+            };
+
+            context.Users.Add(adminUser);
+            Console.WriteLine("Admin user added.");
+
+            var userRole = new UserRole
+            {
+                UserId = adminUser.Id,
+                RoleId = adminRole.Id
+            };
+
+            context.UserRoles.Add(userRole);
+            Console.WriteLine("Admin user role association added.");
+        }
+
+        context.SaveChanges();
+        Console.WriteLine("Database seeding completed.");
     }
 }

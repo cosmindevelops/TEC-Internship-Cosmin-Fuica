@@ -1,4 +1,4 @@
-﻿using ApiApp.Model;
+﻿using Internship.Model;
 using ApiApp.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

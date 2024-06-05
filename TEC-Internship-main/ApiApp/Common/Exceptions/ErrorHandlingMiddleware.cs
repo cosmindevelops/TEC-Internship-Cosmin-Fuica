@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Net;
 using System.Text.Json;
 
 namespace ApiApp.Common.Exceptions;
@@ -37,12 +38,19 @@ public class ErrorHandlingMiddleware
                 break;
 
             case UserAlreadyExistsException _:
+            case DuplicateDepartmentException _:
                 code = HttpStatusCode.Conflict; // 409
                 result = JsonSerializer.Serialize(new { error = exception.Message });
                 break;
 
             case InvalidCredentialsException _:
                 code = HttpStatusCode.Unauthorized; // 401
+                result = JsonSerializer.Serialize(new { error = exception.Message });
+                break;
+
+            case PersonNotFoundException _:
+            case DepartmentNotFoundException _:
+                code = HttpStatusCode.NotFound; // 404
                 result = JsonSerializer.Serialize(new { error = exception.Message });
                 break;
 

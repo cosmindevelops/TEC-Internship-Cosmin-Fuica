@@ -1,4 +1,4 @@
-﻿using ApiApp.Model;
+﻿using Internship.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
