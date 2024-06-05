@@ -1,56 +1,42 @@
-﻿
+﻿@model WebApp.Models.PersonViewModel
+
 @{
     ViewData["Title"] = "Add";
 }
 
-@addTagHelper *,Microfost.AspNetCore.Mvc.TagHelpers
-@addTagHelper *,AuthoringTagHelpers
-
-@model Person
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <form method="post" asp-action="Add">
     <div class="form-row">
         <div class="col-md-4 mb-3">
-
             <label> Person Name</label>
             <input asp-for="Name" class="form-control" />
-
-        </div> 
+        </div>
         <div class="col-md-4 mb-3">
-
             <label> Person Surname</label>
             <input asp-for="Surname" class="form-control" />
         </div>
         <div class="col-md-4 mb-3">
-
             <label> Age</label>
             <input asp-for="Age" class="form-control" />
         </div>
-
-    </div> 
+    </div>
     <div class="form-row">
         <div class="col-md-4 mb-3">
-
             <label> Address</label>
             <input asp-for="Address" class="form-control" />
         </div>
-
-    </div>  
+    </div>
     <div class="form-row">
         <div class="col-md-4 mb-3">
-
             <label> Position Id</label>
             <input asp-for="PositionId" class="form-control" />
         </div>
         <div class="col-md-4 mb-3">
-
             <label> Salary</label>
-            <input asp-for="SalaryId" class="form-control" />
+            <input asp-for="Salary.Amount" class="form-control" />
         </div>
-
-        <div asp-validation-summary="ModelOnly">
-
-        </div>
-    </div>     
+        <div asp-validation-summary="ModelOnly"></div>
+    </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </form>

@@ -17,7 +17,7 @@ public class PersonController : BaseController
         _personService = personService ?? throw new ArgumentNullException(nameof(personService));
     }
 
-    [Authorize(Roles = "User,Admin")]
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllPersons()
     {

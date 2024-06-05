@@ -1,109 +1,163 @@
-﻿using WebApp.Models;
-using Microsoft.AspNetCore.Http;
+﻿using ApiApp.Common.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+using WebApp.Models;
+using WebApp.Services.Interfaces;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class PersonController : Controller
 {
-    public class PersonController : Controller
+    private readonly IConfiguration _config;
+    private readonly string _apiBaseUrl;
+    private readonly IPersonService _personService;
+
+    public PersonController(IConfiguration config, IPersonService personService)
     {
-        //HINT task 8 start
+        _config = config;
+        _apiBaseUrl = _config.GetValue<string>("ApiSettings:ApiUrl");
+        _personService = personService;
+    }
 
-/*        private readonly IConfiguration _config;
-        private readonly string _api;
-        public PersonController(IConfiguration config)
+    public async Task<IActionResult> Index()
+    {
+        var persons = await _personService.GetPersonsAsync();
+        var personInfos = persons.Select(dto => new PersonInformation
         {
-            _config = config;
-            _api = _config.GetValue<string>("");
-        }*/
+            Id = dto.Id,
+            Name = dto.Name,
+            Surname = dto.Surname,
+            PositionName = dto.Position?.Name,
+            DepartmentName = dto.Position?.Department?.DepartmentName,
+            Salary = dto.Salary?.Amount ?? 0
+        }).ToList();
 
-        //HINT task 8 end
-        public async Task<IActionResult> Index()
+        return View(personInfos);
+    }
+
+    public IActionResult Add()
+    {
+        return View(new PersonViewModel());
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(PersonViewModel personViewModel)
+    {
+        if (ModelState.IsValid)
         {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage message = await client.GetAsync("http://localhost:5229/api/persons");
-            if(message.IsSuccessStatusCode)
+            var createUpdatePersonDto = new CreateUpdatePersonDto
             {
-                var jstring = await message.Content.ReadAsStringAsync();
-                List<PersonInformation> list = JsonConvert.DeserializeObject<List<PersonInformation>>(jstring);
-                return View(list);
-            }
-            else
-            return View(new List<PersonInformation>());
-        }
-        public IActionResult Add()
-        {
-            Person person = new Person();
-            return View(person);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Add(Person person)
-        {
-            if(ModelState.IsValid)
-            {
-                HttpClient client = new HttpClient();
-                var jsonPerson = JsonConvert.SerializeObject(person);
-                StringContent content = new StringContent(jsonPerson,Encoding.UTF8,"application/json");
-                HttpResponseMessage message = await client.PostAsync("http://localhost:5229/api/persons", content);
-                if(message.IsSuccessStatusCode)
+                Name = personViewModel.Name,
+                Surname = personViewModel.Surname,
+                Age = personViewModel.Age,
+                Email = personViewModel.Email,
+                Address = personViewModel.Address,
+                PersonDetails = new CreateUpdatePersonDetailsDto
                 {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "There is an API Error");
-                    return View(person);
-                }
+                    PersonId = personViewModel.PersonDetails.PersonId,
+                    BirthDay = personViewModel.PersonDetails.BirthDay,
+                    PersonCity = personViewModel.PersonDetails.PersonCity
+                },
+                Position = new CreateUpdatePositionDto { Name = personViewModel.Position.Name },
+                Salary = new CreateUpdateSalaryDto { Amount = personViewModel.Salary.Amount }
+            };
 
-            }
-            else
-            {
-                return View(person);
-            }
-        }
-
-        public async Task<IActionResult> Update(int Id)
-        {
             HttpClient client = new HttpClient();
-            HttpResponseMessage message = await client.GetAsync("http://localhost:5229/api/persons/" + Id);
+            var jsonPerson = JsonConvert.SerializeObject(createUpdatePersonDto);
+            StringContent content = new StringContent(jsonPerson, Encoding.UTF8, "application/json");
+            HttpResponseMessage message = await client.PostAsync($"{_apiBaseUrl}/person", content);
             if (message.IsSuccessStatusCode)
             {
-                var jstring = await message.Content.ReadAsStringAsync();
-                Person person = JsonConvert.DeserializeObject<Person>(jstring);
-                return View(person);
+                return RedirectToAction("Index");
             }
             else
-                return RedirectToAction("Add");
-        }
-        [HttpPost]
-        public async Task<IActionResult> Update(Person person)
-        {
-            if (ModelState.IsValid)
             {
-                HttpClient client = new HttpClient();
-                var jsonperson = JsonConvert.SerializeObject(person);
-                StringContent content = new StringContent(jsonperson, Encoding.UTF8, "application/json");
-                HttpResponseMessage message = await client.PutAsync("http://localhost:5229/api/persons", content);
-                if(message.IsSuccessStatusCode)
+                ModelState.AddModelError("", "There is an API Error");
+                return View(personViewModel);
+            }
+        }
+        else
+        {
+            return View(personViewModel);
+        }
+    }
+
+    public async Task<IActionResult> Update(int id)
+    {
+        HttpClient client = new HttpClient();
+        HttpResponseMessage message = await client.GetAsync($"{_apiBaseUrl}/person/{id}");
+        if (message.IsSuccessStatusCode)
+        {
+            var jstring = await message.Content.ReadAsStringAsync();
+            var personDto = JsonConvert.DeserializeObject<PersonDto>(jstring);
+
+            var personViewModel = new PersonViewModel
+            {
+                Id = personDto.Id,
+                Name = personDto.Name,
+                Surname = personDto.Surname,
+                Age = personDto.Age,
+                Email = personDto.Email,
+                Address = personDto.Address,
+                PositionId = personDto.PositionId,
+                SalaryId = personDto.SalaryId,
+                Position = personDto.Position,
+                Salary = personDto.Salary,
+                PersonDetails = personDto.PersonDetails
+            };
+
+            return View(personViewModel);
+        }
+        else
+        {
+            return RedirectToAction("Index");
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Update(int id, PersonViewModel personViewModel)
+    {
+        if (ModelState.IsValid)
+        {
+            var createUpdatePersonDto = new CreateUpdatePersonDto
+            {
+                Name = personViewModel.Name,
+                Surname = personViewModel.Surname,
+                Age = personViewModel.Age,
+                Email = personViewModel.Email,
+                Address = personViewModel.Address,
+                PersonDetails = new CreateUpdatePersonDetailsDto
                 {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return View(person);
-                }
+                    PersonId = personViewModel.PersonDetails.PersonId,
+                    BirthDay = personViewModel.PersonDetails.BirthDay,
+                    PersonCity = personViewModel.PersonDetails.PersonCity
+                },
+                Position = new CreateUpdatePositionDto { Name = personViewModel.Position.Name },
+                Salary = new CreateUpdateSalaryDto { Amount = personViewModel.Salary.Amount }
+            };
+
+            HttpClient client = new HttpClient();
+            var jsonPerson = JsonConvert.SerializeObject(createUpdatePersonDto);
+            StringContent content = new StringContent(jsonPerson, Encoding.UTF8, "application/json");
+            HttpResponseMessage message = await client.PutAsync($"{_apiBaseUrl}/person/{id}", content);
+            if (message.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index");
             }
             else
-                return View(person);
+            {
+                ModelState.AddModelError("", "There is an API Error");
+                return View(personViewModel);
+            }
         }
-     
-
+        else
+        {
+            return View(personViewModel);
+        }
     }
 }
