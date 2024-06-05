@@ -6,6 +6,7 @@ using ApiApp.Services.Interfaces;
 using Internship.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -15,7 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<APIDbContext>();
+builder.Services.AddDbContext<APIDbContext>(options =>
+{
+    var configuration = builder.Configuration;
+    var dbPath = configuration.GetValue<string>("DatabasePath");
+    options.UseSqlite($"Data Source={dbPath}");
+});
 
 // Register services
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -66,4 +72,22 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
 
+// Seed the database
+SeedDatabase(app);
+
 app.Run();
+
+static void SeedDatabase(IHost app)
+{
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<APIDbContext>();
+        APIDbContext.SeedData(context);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"An error occurred while seeding the database: {ex.Message}");
+    }
+}
