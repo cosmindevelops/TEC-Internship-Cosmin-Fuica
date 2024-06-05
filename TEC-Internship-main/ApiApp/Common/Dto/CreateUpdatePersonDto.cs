@@ -7,7 +7,7 @@ public class CreateUpdatePersonDto
     public int Age { get; set; }
     public string Email { get; set; }
     public string Address { get; set; }
-    public int PositionId { get; set; }
-    public int SalaryId { get; set; }
     public CreateUpdatePersonDetailsDto PersonDetails { get; set; }
+    public CreateUpdatePositionDto Position { get; set; }
+    public CreateUpdateSalaryDto Salary { get; set; }
 }

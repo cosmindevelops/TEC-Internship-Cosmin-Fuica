@@ -1,12 +1,13 @@
-using ApiApp.Services.Interfaces;
+using ApiApp.Common.Exceptions;
+using ApiApp.Common.Mapping;
+using ApiApp.Data;
 using ApiApp.Services;
+using ApiApp.Services.Interfaces;
+using Internship.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Internship.Model;
-using Microsoft.AspNetCore.Identity;
-using ApiApp.Data;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,10 @@ builder.Services.AddDbContext<APIDbContext>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // Configure JWT authentication
 var jwtSection = builder.Configuration.GetSection("Jwt");
@@ -56,6 +61,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.MapControllers();
 

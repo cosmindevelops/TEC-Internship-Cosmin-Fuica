@@ -1,7 +1,6 @@
-﻿using Internship.Model;
-using ApiApp.Data;
+﻿using ApiApp.Data;
+using Internship.Model;
 using Internship.ObjectModel;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.Entity;
 
