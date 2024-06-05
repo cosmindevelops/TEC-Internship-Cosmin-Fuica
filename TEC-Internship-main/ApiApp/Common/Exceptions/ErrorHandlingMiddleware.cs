@@ -38,6 +38,7 @@ public class ErrorHandlingMiddleware
                 break;
 
             case UserAlreadyExistsException _:
+            case DuplicateDepartmentException _:
                 code = HttpStatusCode.Conflict; // 409
                 result = JsonSerializer.Serialize(new { error = exception.Message });
                 break;

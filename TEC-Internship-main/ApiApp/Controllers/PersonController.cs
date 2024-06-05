@@ -17,7 +17,7 @@ public class PersonController : BaseController
         _personService = personService ?? throw new ArgumentNullException(nameof(personService));
     }
 
-    [AllowAnonymous]
+    [Authorize(Roles = "User,Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllPersons()
     {
@@ -25,7 +25,7 @@ public class PersonController : BaseController
         return Ok(persons);
     }
 
-    [AllowAnonymous]
+    [Authorize(Roles = "User,Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPerson(int id)
     {
@@ -76,19 +76,6 @@ public class PersonController : BaseController
     public async Task<IActionResult> DeletePerson(int id)
     {
         var deleted = await _personService.DeletePersonAsync(id);
-        if (!deleted)
-        {
-            return NotFound();
-        }
-
-        return NoContent();
-    }
-
-    [Authorize(Roles = "User,Admin")]
-    [HttpDelete("department/{id}")]
-    public async Task<IActionResult> DeleteDepartment(int id)
-    {
-        var deleted = await _personService.DeleteDepartmentAsync(id);
         if (!deleted)
         {
             return NotFound();
