@@ -67,6 +67,6 @@ public class AuthController : BaseController
 
         var result = await _authService.LoginAsync(model);
 
-        return Ok(new AuthResponseDto { UserId = result.UserId, Token = result.Token });
+        return Ok(new AuthResponseDto { UserId = result.UserId, Token = result.Token, Username = result.Username });
     }
 }

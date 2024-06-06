@@ -37,6 +37,14 @@ public class DepartmentController : BaseController
         return Ok(department);
     }
 
+    [AllowAnonymous]
+    [HttpGet("total")]
+    public async Task<IActionResult> GetTotalDepartments()
+    {
+        var totalDepartments = await _departmentService.GetTotalDepartmentsAsync();
+        return Ok(new { TotalDepartments = totalDepartments });
+    }
+
     [Authorize(Roles = "User,Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateDepartment([FromBody] CreateUpdateDepartmentDto departmentDto)

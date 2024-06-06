@@ -1,5 +1,4 @@
 ﻿using ApiApp.Common.Dto;
-using ApiApp.Services;
 using ApiApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +35,14 @@ public class PersonController : BaseController
         }
 
         return Ok(person);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("total")]
+    public async Task<IActionResult> GetTotalPersons()
+    {
+        var totalPersons = await _personService.GetTotalPersonsAsync();
+        return Ok(new { TotalPersons = totalPersons });
     }
 
     [Authorize(Roles = "User,Admin")]

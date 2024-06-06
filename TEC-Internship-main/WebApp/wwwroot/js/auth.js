@@ -6,8 +6,9 @@
             body: JSON.stringify(model)
         }).then(response => response.json())
             .then(data => {
-                if (data.token) {
+                if (data.token && data.username) {
                     localStorage.setItem('token', data.token);
+                    localStorage.setItem('username', data.username);
                 }
                 return data;
             });
@@ -23,10 +24,15 @@
 
     static logout() {
         localStorage.removeItem('token');
+        localStorage.removeItem('username');
     }
 
     static getToken() {
         return localStorage.getItem('token');
+    }
+
+    static getUsername() {
+        return localStorage.getItem('username');
     }
 }
 

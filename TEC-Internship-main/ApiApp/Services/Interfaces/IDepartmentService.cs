@@ -13,4 +13,6 @@ public interface IDepartmentService
     Task<DepartmentDto> CreateDepartmentAsync(CreateUpdateDepartmentDto departmentDto);
 
     Task<bool> ChangePersonDepartmentAsync(int personId, string newDepartmentName);
+
+    Task<int> GetTotalDepartmentsAsync();
 }

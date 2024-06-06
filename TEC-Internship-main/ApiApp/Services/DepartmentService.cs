@@ -34,6 +34,14 @@ public class DepartmentService : IDepartmentService
         return _mapper.Map<DepartmentDto>(department);
     }
 
+    // Method to get the total number of departments excluding "Unassigned"
+    public async Task<int> GetTotalDepartmentsAsync()
+    {
+        return await _context.Departments
+            .Where(d => d.DepartmentName != "Unassigned")
+            .CountAsync();
+    }
+
     public async Task<DepartmentDto> CreateDepartmentAsync(CreateUpdateDepartmentDto departmentDto)
     {
         var existingDepartment = await _context.Departments

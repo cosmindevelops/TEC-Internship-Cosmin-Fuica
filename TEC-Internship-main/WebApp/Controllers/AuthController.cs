@@ -31,14 +31,15 @@ public class AuthController : Controller
         }
 
         HttpContext.Session.SetString("Token", result.Token);
+        HttpContext.Session.SetString("Username", result.Username);
 
         return Ok(new
         {
             Token = result.Token,
-            RedirectUrl = Url.Action("Index", "Home")
+            Username = result.Username,
+            RedirectUrl = Url.Action("Index", "Dashboard")
         });
     }
-
 
     [HttpPost("auth/register")]
     public async Task<IActionResult> Register([FromBody] RegisterModelDto model)
