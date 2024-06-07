@@ -27,6 +27,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<ISalaryService, SalaryService>();
 
         services.AddControllersWithViews();
         services.AddRazorPages();
@@ -91,6 +92,10 @@ public class Startup
             options.IdleTimeout = TimeSpan.FromMinutes(30);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
+        });
+        services.AddAntiforgery(options =>
+        {
+            options.HeaderName = "RequestVerificationToken";
         });
     }
 

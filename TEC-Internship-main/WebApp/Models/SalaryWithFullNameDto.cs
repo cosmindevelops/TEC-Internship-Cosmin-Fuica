@@ -1,4 +1,4 @@
-﻿namespace ApiApp.Common.Dto;
+﻿namespace WebApp.Models;
 
 public class SalaryWithFullNameDto
 {

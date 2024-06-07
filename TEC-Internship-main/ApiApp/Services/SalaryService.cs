@@ -25,6 +25,7 @@ public class SalaryService : ISalaryService
             .Where(p => p.Salary != null)
             .Select(p => new SalaryWithFullNameDto
             {
+                PersonId = p.Id,
                 FullName = p.Name + " " + p.Surname,
                 Amount = p.Salary.Amount
             })

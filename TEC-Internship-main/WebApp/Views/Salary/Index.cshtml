@@ -1,0 +1,111 @@
+﻿@model IEnumerable<WebApp.Models.SalaryWithFullNameDto>
+
+@{
+    ViewData["Title"] = "Salaries";
+}
+
+<style>
+
+    .custom-table {
+        border-collapse: collapse;
+        width: 80%;
+        margin: 0 auto;
+        margin-top: 20px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-cell {
+        width: 10px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .salary-amount, .salary-input {
+        display: inline-block;
+        width: 150px;
+    }
+
+        .salary-amount{
+        padding-left: 40px;
+        }
+
+        .icon-cell a {
+            margin-left: 10px;
+        }
+
+        .custom-table th, .custom-table td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        .custom-table thead {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .custom-table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .custom-table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .custom-table th.actions-header,
+        .custom-table td.actions-cell {
+            text-align: right;
+            width: 1%;
+            white-space: nowrap;
+        }
+
+    .edit-icon, .save-icon {
+        font-size: 1.2em;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center">Salaries</h2>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <table class="table table-striped table-hover custom-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Full Name</th>
+                    <th class="salary-title" style="padding-left:50px;">Salary</th>
+                    <th class="text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var salary in Model)
+                {
+                    <tr>
+                        <td>@salary.FullName</td>
+                        <td>
+                            <span class="salary-amount" id="salary-amount-@salary.PersonId">@salary.Amount</span>
+                            <input type="number" class="form-control salary-input" id="salary-input-@salary.PersonId" value="@salary.Amount" style="display: none;" max="999999999" />
+                        </td>
+                        <td class="icon-cell text-right">
+                            <a href="javascript:void(0);" class="edit-icon" data-person-id="@salary.PersonId">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="javascript:void(0);" class="save-icon" data-person-id="@salary.PersonId" style="display: none;">
+                                <i class="fas fa-save"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/salary.js"></script>
+}

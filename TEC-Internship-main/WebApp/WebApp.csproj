@@ -23,4 +23,8 @@
     <ProjectReference Include="..\ApiApp\ApiApp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Person\" />
+  </ItemGroup>
+
 </Project>
