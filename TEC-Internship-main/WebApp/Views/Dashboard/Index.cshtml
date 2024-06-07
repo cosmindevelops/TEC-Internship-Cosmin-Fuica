@@ -40,7 +40,7 @@
                     <h5 class="card-title">Quick Actions</h5>
                     <ul class="list-group">
                         <li class="list-group-item"><a href="/person/add">Add Person</a></li>
-                        <li class="list-group-item"><a href="/department/add">Add Department</a></li>
+                        <li class="list-group-item"><a href="/Department">Add Department</a></li>
                         <li class="list-group-item"><a href="/Salary">Edit Salary</a></li>
                     </ul>
                 </div>
@@ -50,10 +50,5 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const username = AuthService.getUsername(); // Fetch username from local storage
-            document.getElementById('username-placeholder').textContent = username || 'User';
-        });
-    </script>
+    <script src="~/js/dashboard.js"></script>
 }

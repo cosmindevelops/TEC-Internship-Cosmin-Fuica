@@ -3,6 +3,9 @@
 
     const editIcons = document.querySelectorAll('.edit-icon');
     const saveIcons = document.querySelectorAll('.save-icon');
+    const cancelIcons = document.querySelectorAll('.cancel-icon');
+
+    const MAX_INT_VALUE = 2147483647;
 
     editIcons.forEach(icon => {
         icon.addEventListener('click', function () {
@@ -14,28 +17,29 @@
                 const previousSalaryInput = document.getElementById(`salary-input-${activeEditPersonId}`);
                 const previousEditIcon = document.querySelector(`.edit-icon[data-person-id="${activeEditPersonId}"]`);
                 const previousSaveIcon = document.querySelector(`.save-icon[data-person-id="${activeEditPersonId}"]`);
+                const previousCancelIcon = document.querySelector(`.cancel-icon[data-person-id="${activeEditPersonId}"]`);
 
                 previousSalaryAmount.style.display = 'block';
                 previousSalaryInput.style.display = 'none';
                 previousEditIcon.style.display = 'inline';
                 previousSaveIcon.style.display = 'none';
+                previousCancelIcon.style.display = 'none';
             }
 
             const salaryAmount = document.getElementById(`salary-amount-${personId}`);
             const salaryInput = document.getElementById(`salary-input-${personId}`);
             const saveIcon = document.querySelector(`.save-icon[data-person-id="${personId}"]`);
+            const cancelIcon = document.querySelector(`.cancel-icon[data-person-id="${personId}"]`);
 
-            console.log(`Edit - Person ID: ${personId}`);
-            console.log(`Salary Amount Element:`, salaryAmount);
-            console.log(`Salary Input Element:`, salaryInput);
-
-            if (salaryAmount && salaryInput && saveIcon) {
+            if (salaryAmount && salaryInput && saveIcon && cancelIcon) {
                 salaryAmount.style.display = 'none';
                 salaryInput.style.display = 'block';
                 this.style.display = 'none';
                 saveIcon.style.display = 'inline';
-                activeEditPersonId = personId; // Set the active edit person ID
+                cancelIcon.style.display = 'inline';
+                activeEditPersonId = personId;
             } else {
+                toastr.error(`Elements not found for person ID ${personId}`, 'Error');
                 console.error(`Elements not found for person ID ${personId}`);
             }
         });
@@ -46,23 +50,25 @@
             const personId = this.getAttribute('data-person-id');
             const salaryInput = document.getElementById(`salary-input-${personId}`);
 
-            console.log(`Save - Person ID: ${personId}`);
-            console.log(`Salary Input Element:`, salaryInput);
-
             if (!salaryInput) {
+                toastr.error(`Could not find salary input for person ID ${personId}`, 'Error');
                 console.error(`Could not find salary input for person ID ${personId}`);
                 return;
             }
 
             const newAmount = parseInt(salaryInput.value, 10);
-            console.log(`New Amount: ${newAmount}`);
+
+            if (isNaN(newAmount) || newAmount <= 0 || newAmount > MAX_INT_VALUE) {
+                toastr.error(`Salary must be a number greater than 0 and less than or equal to ${MAX_INT_VALUE}`, 'Validation Error');
+                return;
+            }
 
             const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
             const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
 
             if (!csrfToken) {
+                toastr.error('Failed to update salary: CSRF token not found', 'Error');
                 console.error('CSRF token not found');
-                alert('Failed to update salary: CSRF token not found');
                 return;
             }
 
@@ -77,13 +83,36 @@
                     if (response.ok) {
                         location.reload();
                     } else {
-                        alert('Failed to update salary');
+                        toastr.error('Failed to update salary', 'Error');
                     }
                 })
                 .catch(error => {
+                    toastr.error('Error updating salary', 'Error');
                     console.error('Error updating salary:', error);
-                    alert('Failed to update salary');
                 });
+        });
+    });
+
+    cancelIcons.forEach(icon => {
+        icon.addEventListener('click', function () {
+            const personId = this.getAttribute('data-person-id');
+            const salaryAmount = document.getElementById(`salary-amount-${personId}`);
+            const salaryInput = document.getElementById(`salary-input-${personId}`);
+            const editIcon = document.querySelector(`.edit-icon[data-person-id="${personId}"]`);
+            const saveIcon = document.querySelector(`.save-icon[data-person-id="${personId}"]`);
+            const cancelIcon = this;
+
+            if (salaryAmount && salaryInput && editIcon && saveIcon && cancelIcon) {
+                salaryAmount.style.display = 'block';
+                salaryInput.style.display = 'none';
+                editIcon.style.display = 'inline';
+                saveIcon.style.display = 'none';
+                cancelIcon.style.display = 'none';
+                activeEditPersonId = null;
+            } else {
+                toastr.error(`Elements not found for person ID ${personId}`, 'Error');
+                console.error(`Elements not found for person ID ${personId}`);
+            }
         });
     });
 });

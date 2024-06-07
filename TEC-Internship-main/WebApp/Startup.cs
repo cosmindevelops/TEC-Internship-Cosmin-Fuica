@@ -28,6 +28,7 @@ public class Startup
     {
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<ISalaryService, SalaryService>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
 
         services.AddControllersWithViews();
         services.AddRazorPages();

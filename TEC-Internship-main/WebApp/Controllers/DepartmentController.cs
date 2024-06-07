@@ -1,93 +1,62 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Threading.Tasks;
-using WebApp.Models;
+using WebApp.Services.Interfaces;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class DepartmentController : Controller
 {
-    public class DepartmentController : Controller
+    private readonly IDepartmentService _departmentService;
+    private readonly IConfiguration _configuration;
+
+    public DepartmentController(IDepartmentService departmentService, IConfiguration configuration)
     {
-        public async Task<IActionResult> Index()
-        {
-            List<Department> list = new List<Department>();
-            HttpClient client = new HttpClient();
-            HttpResponseMessage responseMessage = await client.GetAsync("http://localhost:5229/api/departments");
+        _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
 
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var jstring = await responseMessage.Content.ReadAsStringAsync();
-                list = JsonConvert.DeserializeObject<List<Department>>(jstring);
-                return View(list);
-            }
-            else
-                return View(list);
-        }
-        public IActionResult Add()
-        {
-            Department department = new Department();
-            return View(department);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Add(Department department)
-        {
-            if (ModelState.IsValid)
-            {
-                HttpClient client = new HttpClient();
-                var jsondepartment = JsonConvert.SerializeObject(department);
-                StringContent content = new StringContent(jsondepartment, Encoding.UTF8, "application/json");
-                HttpResponseMessage message = await client.PostAsync("http://localhost:5229/api/departments", content);
-                if (message.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    ModelState.AddModelError("Error", "There is an API error");
-                    return View(department);
+    public async Task<IActionResult> Index()
+    {
+        var departments = await _departmentService.GetAllDepartmentsAsync();
+        ViewData["ApiUrl"] = _configuration["ApiSettings:ApiUrl"];
+        return View(departments);
+    }
 
-                }
-            }
-            else
-            {
-                return View(department);
-            }
+    [HttpPost]
+    public async Task<IActionResult> UpdateDepartment(int departmentId, string newDepartmentName)
+    {
+        var success = await _departmentService.UpdateDepartmentAsync(departmentId, newDepartmentName);
+        if (!success)
+        {
+            return BadRequest("Failed to update department");
         }
 
-        public async Task<IActionResult> Update(int Id)
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateDepartment([FromForm] string departmentName)
+    {
+        var success = await _departmentService.CreateDepartmentAsync(departmentName);
+        if (!success)
         {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage message = await client.GetAsync("http://localhost:5229/api/departments/" + Id);
-            if (message.IsSuccessStatusCode)
-            {
-                var jstring = await message.Content.ReadAsStringAsync();
-                Department department = JsonConvert.DeserializeObject<Department>(jstring);
-                return View(department);
-            }
-            else
-                return RedirectToAction("Add");
-        }
-        [HttpPost]
-        public async Task<IActionResult> Update(Department department)
-        {
-            if (ModelState.IsValid)
-            {
-                HttpClient client = new HttpClient();
-                var jsondepartment = JsonConvert.SerializeObject(department);
-                StringContent content = new StringContent(jsondepartment, Encoding.UTF8, "application/json");
-                HttpResponseMessage message = await client.PutAsync("http://localhost:5229/api/departments", content);
-                if (message.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                    return View(department);
-            }
-            else
-                return View(department);
+            return BadRequest("Failed to create department");
         }
 
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteDepartment(int departmentId)
+    {
+        var success = await _departmentService.DeleteDepartmentAsync(departmentId);
+        if (!success)
+        {
+            return BadRequest("Failed to delete department");
+        }
+
+        return RedirectToAction("Index");
     }
 }

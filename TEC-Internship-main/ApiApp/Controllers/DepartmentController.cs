@@ -37,7 +37,7 @@ public class DepartmentController : BaseController
         return Ok(department);
     }
 
-    [AllowAnonymous]
+    [Authorize(Roles = "User,Admin")]
     [HttpGet("total")]
     public async Task<IActionResult> GetTotalDepartments()
     {
@@ -71,6 +71,19 @@ public class DepartmentController : BaseController
     public async Task<IActionResult> ChangePersonDepartment(int personId, string newDepartmentName)
     {
         var result = await _departmentService.ChangePersonDepartmentAsync(personId, newDepartmentName);
+        return NoContent();
+    }
+
+    [Authorize(Roles = "User,Admin")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateDepartmentName(int id, [FromBody] CreateUpdateDepartmentDto departmentDto)
+    {
+        var updated = await _departmentService.UpdateDepartmentNameAsync(id, departmentDto.DepartmentName);
+        if (!updated)
+        {
+            return NotFound();
+        }
+
         return NoContent();
     }
 }

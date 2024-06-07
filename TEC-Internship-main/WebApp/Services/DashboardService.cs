@@ -1,46 +1,82 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using WebApp.Services.Interfaces;
 
-namespace WebApp.Services
+namespace WebApp.Services;
+
+public class DashboardService : IDashboardService
 {
-    public class DashboardService : IDashboardService
+    private readonly HttpClient _httpClient;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly string _apiUrl;
+
+    public DashboardService(HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
     {
-        private readonly HttpClient _httpClient;
-        private readonly string _apiUrl;
+        _httpClient = httpClient;
+        _httpContextAccessor = httpContextAccessor;
+        _apiUrl = configuration["ApiSettings:ApiUrl"];
+    }
 
-        public DashboardService(HttpClient httpClient, IConfiguration configuration)
+    public async Task<int> GetTotalPersonsAsync()
+    {
+        try
         {
-            _httpClient = httpClient;
-            _apiUrl = configuration["ApiSettings:ApiUrl"];
-        }
+            var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiUrl}/person/total");
+            if (!string.IsNullOrEmpty(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
 
-        public async Task<int> GetTotalPersonsAsync()
-        {
-            var response = await _httpClient.GetAsync($"{_apiUrl}/person/total");
+            var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<TotalPersonsResponse>();
             return result.TotalPersons;
         }
-
-        public async Task<int> GetTotalDepartmentsAsync()
+        catch (Exception ex)
         {
-            var response = await _httpClient.GetAsync($"{_apiUrl}/department/total");
+            // Log error
+            Console.WriteLine($"Error fetching total persons: {ex.Message}");
+            throw;
+        }
+    }
+
+    public async Task<int> GetTotalDepartmentsAsync()
+    {
+        try
+        {
+            var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiUrl}/department/total");
+            if (!string.IsNullOrEmpty(token))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<TotalDepartmentsResponse>();
             return result.TotalDepartments;
         }
-
-        private class TotalPersonsResponse
+        catch (Exception ex)
         {
-            public int TotalPersons { get; set; }
+            // Log error
+            Console.WriteLine($"Error fetching total departments: {ex.Message}");
+            throw;
         }
+    }
 
-        private class TotalDepartmentsResponse
-        {
-            public int TotalDepartments { get; set; }
-        }
+    private class TotalPersonsResponse
+    {
+        public int TotalPersons { get; set; }
+    }
+
+    private class TotalDepartmentsResponse
+    {
+        public int TotalDepartments { get; set; }
     }
 }

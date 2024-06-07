@@ -1,7 +1,8 @@
-﻿@model IEnumerable<WebApp.Models.SalaryWithFullNameDto>
+﻿@model IEnumerable<WebApp.Models.DepartmentDto>
 
 @{
-    ViewData["Title"] = "Salaries";
+    ViewData["Title"] = "Departments";
+    var apiUrl = ViewData["ApiUrl"] as string;
 }
 
 <style>
@@ -19,7 +20,6 @@
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 5px;
-            white-space: nowrap;
         }
 
         .custom-table th {
@@ -41,24 +41,15 @@
                 color: #0056b3;
             }
 
-        .custom-table input[type="text"], .custom-table input[type="number"] {
-            width: 80%;
+        .custom-table input[type="text"] {
+            width: calc(100% - 30px);
             padding: 5px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
         .custom-table .form-control {
             margin-bottom: 0;
             padding: 10px;
             font-size: 14px;
-            width: 100%;
-            max-width: 80%;
-            overflow: hidden;
-            white-space: nowrap;
         }
 
         .custom-table tbody tr {
@@ -73,75 +64,96 @@
             border-bottom: 2px solid #dee2e6;
         }
 
-        .custom-table .icon-cell a {
-            margin-left: 10px; /* Adjust the value as needed */
-            margin-right: 10px; /* Adjust the value as needed */
-            text-decoration: none;
-            color: #007bff;
+    .new-department-row {
+        text-align: center;
+    }
+
+        .new-department-row input {
+            width: calc(100% - 30px);
+            padding: 10px;
+            font-size: 14px;
         }
 
-    .salary-amount, .salary-input {
-        display: inline-block;
-        width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        .new-department-row .create-icon {
+            font-size: 20px;
+            margin-left: 10px;
+            vertical-align: middle;
+            cursor: pointer;
+            color: #28a745;
+        }
+
+            .new-department-row .create-icon:hover {
+                color: #218838;
+            }
+
+    .custom-table .icon-cell a {
+        margin-left: 10px;
+        margin-right: 10px;
+        text-decoration: none;
+        color: #007bff;
     }
 
-    .salary-input {
-        display: none;
+    td.icon-cell {
+        max-width: 10px;
+        width:auto;
     }
-
-    td{
-        max-width: 100px;
-    }
-    td.icon-cell{
-        max-width: 50px;
-    }
-
 </style>
 
 <div class="container mt-5">
-    <h2 class="text-center">Salaries</h2>
+    <h2 class="text-center">Departments</h2>
     <form method="post">
         @Html.AntiForgeryToken()
         <table class="table table-striped table-hover custom-table">
             <thead class="thead-dark">
                 <tr>
-                    <th>Full Name</th>
-                    <th class="salary-title" style="padding-left:50px;">Salary</th>
+                    <th>Department Name</th>
                     <th class="text-right">Action</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var salary in Model)
+                @foreach (var department in Model)
                 {
                     <tr>
-                        <td>@salary.FullName</td>
                         <td>
-                            <span class="salary-amount" id="salary-amount-@salary.PersonId">@salary.Amount</span>
-                            <input type="number" class="form-control salary-input" id="salary-input-@salary.PersonId" value="@salary.Amount" max="999999999" />
+                            <span class="department-name" id="department-name-@department.DepartmentId">@department.DepartmentName</span>
+                            <input type="text" class="form-control department-input" id="department-input-@department.DepartmentId" value="@department.DepartmentName" style="display: none;" />
                         </td>
                         <td class="icon-cell text-right">
-                            <a href="javascript:void(0);" class="edit-icon" data-person-id="@salary.PersonId" title="Edit">
+                            <a href="javascript:void(0);" class="edit-icon" data-department-id="@department.DepartmentId" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="javascript:void(0);" class="save-icon" data-person-id="@salary.PersonId" style="display: none;" title="Save">
+                            <a href="javascript:void(0);" class="save-icon" data-department-id="@department.DepartmentId" style="display: none;" title="Save">
                                 <i class="fas fa-save"></i>
                             </a>
-                            <a href="javascript:void(0);" class="cancel-icon" data-person-id="@salary.PersonId" style="display: none;" title="Cancel">
+                            <a href="javascript:void(0);" class="cancel-icon" data-department-id="@department.DepartmentId" style="display: none;" title="Cancel">
                                 <i class="fas fa-times"></i>
+                            </a>
+                            <a href="javascript:void(0);" class="delete-icon" data-department-id="@department.DepartmentId" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
                             </a>
                         </td>
                     </tr>
                 }
+                <tr>
+                    <td>
+                        <input type="text" class="form-control" id="new-department-name" placeholder="New Department Name" />
+                    </td>
+                    <td class="icon-cell text-right">
+                        <a href="javascript:void(0);" id="create-department-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </a>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </form>
 </div>
 
 @section Scripts {
-    <script src="~/js/salary.js"></script>
+    <script>
+        const apiUrl = '@apiUrl';
+    </script>
+    <script src="~/js/department.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>

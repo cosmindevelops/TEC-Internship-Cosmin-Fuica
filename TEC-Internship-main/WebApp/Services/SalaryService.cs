@@ -80,5 +80,4 @@ public class SalaryService : ISalaryService
             throw;
         }
     }
-
 }
