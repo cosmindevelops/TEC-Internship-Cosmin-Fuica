@@ -1,109 +1,65 @@
-﻿using WebApp.Models;
-using Microsoft.AspNetCore.Http;
+﻿using ApiApp.Common.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
+using WebApp.Services.Interfaces;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class PersonController : Controller
 {
-    public class PersonController : Controller
+    private readonly IPersonService _personService;
+    private readonly IDepartmentService _departmentService;
+
+    public PersonController(IPersonService personService, IDepartmentService departmentService)
     {
-        //HINT task 8 start
+        _personService = personService ?? throw new ArgumentNullException(nameof(personService));
+        _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
+    }
 
-/*        private readonly IConfiguration _config;
-        private readonly string _api;
-        public PersonController(IConfiguration config)
-        {
-            _config = config;
-            _api = _config.GetValue<string>("");
-        }*/
+    public async Task<IActionResult> Index()
+    {
+        var persons = await _personService.GetAllPersonsAsync();
+        return View(persons);
+    }
 
-        //HINT task 8 end
-        public async Task<IActionResult> Index()
-        {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage message = await client.GetAsync("http://localhost:5229/api/persons");
-            if(message.IsSuccessStatusCode)
-            {
-                var jstring = await message.Content.ReadAsStringAsync();
-                List<PersonInformation> list = JsonConvert.DeserializeObject<List<PersonInformation>>(jstring);
-                return View(list);
-            }
-            else
-            return View(new List<PersonInformation>());
-        }
-        public IActionResult Add()
-        {
-            Person person = new Person();
-            return View(person);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Add(Person person)
-        {
-            if(ModelState.IsValid)
-            {
-                HttpClient client = new HttpClient();
-                var jsonPerson = JsonConvert.SerializeObject(person);
-                StringContent content = new StringContent(jsonPerson,Encoding.UTF8,"application/json");
-                HttpResponseMessage message = await client.PostAsync("http://localhost:5229/api/persons", content);
-                if(message.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "There is an API Error");
-                    return View(person);
-                }
+    public async Task<IActionResult> Create()
+    {
+        var departments = await _departmentService.GetAllDepartmentsAsync();
+        ViewData["Departments"] = departments;
+        return View("PersonDepartmentManagement");
+    }
 
-            }
-            else
-            {
-                return View(person);
-            }
-        }
-
-        public async Task<IActionResult> Update(int Id)
+    [HttpPost]
+    public async Task<IActionResult> CreatePerson([FromBody] CreateUpdatePersonDto personDto)
+    {
+        var success = await _personService.CreatePersonAsync(personDto);
+        if (!success)
         {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage message = await client.GetAsync("http://localhost:5229/api/persons/" + Id);
-            if (message.IsSuccessStatusCode)
-            {
-                var jstring = await message.Content.ReadAsStringAsync();
-                Person person = JsonConvert.DeserializeObject<Person>(jstring);
-                return View(person);
-            }
-            else
-                return RedirectToAction("Add");
+            return BadRequest("Failed to create person");
         }
-        [HttpPost]
-        public async Task<IActionResult> Update(Person person)
-        {
-            if (ModelState.IsValid)
-            {
-                HttpClient client = new HttpClient();
-                var jsonperson = JsonConvert.SerializeObject(person);
-                StringContent content = new StringContent(jsonperson, Encoding.UTF8, "application/json");
-                HttpResponseMessage message = await client.PutAsync("http://localhost:5229/api/persons", content);
-                if(message.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
-                else
-                {
-                    return View(person);
-                }
-            }
-            else
-                return View(person);
-        }
-     
+        return Ok();
+    }
 
+    [HttpPost]
+    public async Task<IActionResult> UpdatePerson(int id, [FromBody] CreateUpdatePersonDto personDto)
+    {
+        var success = await _personService.UpdatePersonAsync(id, personDto);
+        if (!success)
+        {
+            return BadRequest("Failed to update person");
+        }
+        return NoContent();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeletePerson(int id)
+    {
+        var success = await _personService.DeletePersonAsync(id);
+        if (!success)
+        {
+            return BadRequest("Failed to delete person");
+        }
+        return NoContent();
     }
 }

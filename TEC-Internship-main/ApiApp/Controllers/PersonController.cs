@@ -1,5 +1,4 @@
 ﻿using ApiApp.Common.Dto;
-using ApiApp.Services;
 using ApiApp.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +7,7 @@ namespace ApiApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "User,Admin")]
 public class PersonController : BaseController
 {
     private readonly IPersonService _personService;
@@ -17,7 +17,6 @@ public class PersonController : BaseController
         _personService = personService ?? throw new ArgumentNullException(nameof(personService));
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllPersons()
     {
@@ -25,7 +24,6 @@ public class PersonController : BaseController
         return Ok(persons);
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPerson(int id)
     {
@@ -38,7 +36,13 @@ public class PersonController : BaseController
         return Ok(person);
     }
 
-    [Authorize(Roles = "User,Admin")]
+    [HttpGet("total")]
+    public async Task<IActionResult> GetTotalPersons()
+    {
+        var totalPersons = await _personService.GetTotalPersonsAsync();
+        return Ok(new { TotalPersons = totalPersons });
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreatePerson([FromBody] CreateUpdatePersonDto personDto)
     {
@@ -52,7 +56,6 @@ public class PersonController : BaseController
         return CreatedAtAction(nameof(GetPerson), new { id = createdPerson.Id }, createdPerson);
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePerson(int id, [FromBody] CreateUpdatePersonDto personDto)
     {
@@ -71,7 +74,6 @@ public class PersonController : BaseController
         return NoContent();
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePerson(int id)
     {

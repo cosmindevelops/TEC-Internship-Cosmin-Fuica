@@ -21,7 +21,9 @@ public class DepartmentService : IDepartmentService
 
     public async Task<IEnumerable<DepartmentDto>> GetAllDepartmentsAsync()
     {
-        var departments = await _context.Departments.ToListAsync();
+        var departments = await _context.Departments
+                                        .Where(d => d.DepartmentName != "Unassigned")
+                                        .ToListAsync();
         return _mapper.Map<IEnumerable<DepartmentDto>>(departments);
     }
 
@@ -32,6 +34,14 @@ public class DepartmentService : IDepartmentService
         if (department == null) throw new DepartmentNotFoundException($"Department with ID {id} was not found");
 
         return _mapper.Map<DepartmentDto>(department);
+    }
+
+    // Method to get the total number of departments excluding "Unassigned"
+    public async Task<int> GetTotalDepartmentsAsync()
+    {
+        return await _context.Departments
+            .Where(d => d.DepartmentName != "Unassigned")
+            .CountAsync();
     }
 
     public async Task<DepartmentDto> CreateDepartmentAsync(CreateUpdateDepartmentDto departmentDto)
@@ -60,6 +70,18 @@ public class DepartmentService : IDepartmentService
 
         _context.Departments.Remove(department);
         await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> UpdateDepartmentNameAsync(int departmentId, string newDepartmentName)
+    {
+        var department = await _context.Departments.FindAsync(departmentId);
+
+        if (department == null) throw new DepartmentNotFoundException($"Department with ID {departmentId} was not found");
+
+        department.DepartmentName = newDepartmentName;
+        await _context.SaveChangesAsync();
+
         return true;
     }
 

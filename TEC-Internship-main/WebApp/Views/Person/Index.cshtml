@@ -1,40 +1,99 @@
-﻿
+﻿@model IEnumerable<WebApp.Models.PersonDto>
+
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Persons";
+    var apiUrl = ViewData["ApiUrl"] as string;
 }
-@addTagHelper *,Microfost.AspNetCore.Mvc.TagHelpers
-@addTagHelper *,AuthoringTagHelpers
-@model List<PersonInformation>
-<h1>Person List</h1>
-<div>
-    <a asp-action="Add" class="btn btn-primary">Add</a>
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Position Name</th>
-                <th>Department Name</th>
-                <th>Salary</th>
-                
-                <th>Operations</th>
-            </tr>
-        </thead>
-        <tbody>
-           @foreach (var item in Model)
-           {
-               <tr>
-                   <td>@item.Name</td>
-                   <td>@item.PositionName</td>
-                   <td>@item.DepartmentName</td>
-                   <td>@item.Salary</td>
-                   
-                   <td>
-                       <a style="color:white" class="btn btn-success" asp-action="Update" asp-route-id="@item.Id">Update</a>
-                       <a style="color:white" class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                   </td>
-               </tr>
-           }
-        </tbody>
-    </table>
+
+<link rel="stylesheet" href="~/css/person.css">
+
+<div class="container mt-5">
+    <h2 class="text-center">Persons</h2>
+    <div class="d-flex justify-content-end column-visibility-controls mb-3">
+        <div class="dropdown" style="padding-right:8px;">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="columnDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Display
+            </button>
+            <div class="dropdown-menu" aria-labelledby="columnDropdown">
+                <label class="dropdown-item"><input type="checkbox" data-column="0" checked> Name</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="1" checked> Surname</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="2" checked> BirthDay</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="3" checked> Age</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="4" checked> Address</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="5" checked> City</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="6" checked> Email</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="7" checked> Department</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="8" checked> Position</label>
+                <label class="dropdown-item"><input type="checkbox" data-column="9" checked> Salary</label>
+            </div>
+        </div>
+    </div>
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <table class="table table-striped table-hover custom-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>BirthDay</th>
+                    <th>Age</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Position</th>
+                    <th>Salary</th>
+                    <th class="text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var person in Model)
+                {
+                    <tr>
+                        <td><span>@person.Name</span><input type="text" class="form-control name-input" value="@person.Name" style="display: none;" /></td>
+                        <td><span>@person.Surname</span><input type="text" class="form-control surname-input" value="@person.Surname" style="display: none;" /></td>
+                        <td><span>@person.BirthDay?.ToString("yyyy-MM-dd")</span><input type="date" class="form-control birthday-input" value="@person.BirthDay?.ToString("yyyy-MM-dd")" style="display: none;" /></td>
+                        <td><span>@person.Age</span><input type="number" class="form-control age-input" value="@person.Age" style="display: none;" /></td>
+                        <td><span>@person.Address</span><input type="text" class="form-control address-input" value="@person.Address" style="display: none;" /></td>
+                        <td><span>@person.PersonCity</span><input type="text" class="form-control personcity-input" value="@person.PersonCity" style="display: none;" /></td>
+                        <td><span>@person.Email</span><input type="email" class="form-control email-input" value="@person.Email" style="display: none;" /></td>
+                        <td><span>@person.DepartmentName</span><input type="text" class="form-control department-input" value="@person.DepartmentName" style="display: none;" /></td>
+                        <td><span>@person.PositionName</span><input type="text" class="form-control position-input" value="@person.PositionName" style="display: none;" /></td>
+                        <td><span>@person.SalaryAmount</span><input type="number" class="form-control salary-input" value="@person.SalaryAmount" style="display: none;" /></td>   
+                        <td class="icon-cell text-right">
+                            <a href="javascript:void(0);" class="edit-icon" data-person-id="@person.Id" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a href="javascript:void(0);" class="save-icon" data-person-id="@person.Id" style="display: none;" title="Save"><i class="fas fa-save"></i></a>
+                            <a href="javascript:void(0);" class="cancel-icon" data-person-id="@person.Id" style="display: none;" title="Cancel"><i class="fas fa-times"></i></a>
+                            <a href="javascript:void(0);" class="delete-icon" data-person-id="@person.Id" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
 </div>
 
+@section Scripts {
+    <script>
+        const apiUrl = '@apiUrl';
+    </script>
+    <script src="~/js/person.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        toastr.options = {
+            "positionClass": "toast-bottom-right",
+            "timeOut": "2000",
+            "closeButton": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+    </script>
+
+}

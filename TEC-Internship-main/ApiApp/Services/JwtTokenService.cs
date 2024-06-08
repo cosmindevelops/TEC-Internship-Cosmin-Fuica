@@ -1,5 +1,5 @@
-﻿using Internship.Model;
-using ApiApp.Services.Interfaces;
+﻿using ApiApp.Services.Interfaces;
+using Internship.Model;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

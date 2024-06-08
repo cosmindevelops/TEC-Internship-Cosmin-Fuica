@@ -1,0 +1,94 @@
+﻿.custom-table {
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+    .custom-table th, .custom-table td {
+        text-align: left;
+        padding: 15px;
+        vertical-align: middle;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        white-space: nowrap;
+    }
+
+    .custom-table th {
+        background-color: #343a40;
+        color: white;
+        text-align: center;
+    }
+
+    .custom-table td.icon-cell {
+        text-align: center;
+    }
+
+    .custom-table .edit-icon, .custom-table .delete-icon, .custom-table .save-icon {
+        cursor: pointer;
+        color: #007bff;
+    }
+
+        .custom-table .edit-icon:hover, .custom-table .delete-icon:hover, .custom-table .save-icon:hover {
+            color: #0056b3;
+        }
+
+    .custom-table input[type="text"], .custom-table input[type="number"] {
+        width: 80%;
+        padding: 5px;
+        box-sizing: border-box;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .custom-table .form-control {
+        margin-bottom: 0;
+        padding: 10px;
+        font-size: 14px;
+        width: 100%;
+        max-width: 80%;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .custom-table tbody tr {
+        transition: background-color 0.3s;
+    }
+
+        .custom-table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+    .custom-table thead th {
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .custom-table .icon-cell a {
+        margin-left: 10px;
+        margin-right: 10px;
+        text-decoration: none;
+        color: #007bff;
+    }
+
+.salary-amount, .salary-input {
+    display: inline-block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.salary-input {
+    display: none;
+}
+
+td {
+    max-width: 100px;
+}
+
+    td.icon-cell {
+        max-width: 50px;
+    }

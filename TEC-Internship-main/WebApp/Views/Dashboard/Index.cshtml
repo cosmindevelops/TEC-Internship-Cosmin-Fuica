@@ -1,0 +1,51 @@
+﻿@model WebApp.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/dashboard.css">
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h2>Welcome, <span id="username-placeholder">User</span>!</h2>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Persons</h5>
+                    <p class="card-text">@Model.TotalPersons</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Departments</h5>
+                    <p class="card-text">@Model.TotalDepartments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-lg-4 col-md-6 col-sm-12">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Quick Actions</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="/Person">Display all Persons</a></li>
+                        <li class="list-group-item"><a href="/Person/Create#addPerson">Add Person</a></li>
+                        <li class="list-group-item"><a href="/Person/Create#addDepartment">Add Department</a></li>
+                        <li class="list-group-item"><a href="/Salary">Edit Salary</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/dashboard.js"></script>
+}

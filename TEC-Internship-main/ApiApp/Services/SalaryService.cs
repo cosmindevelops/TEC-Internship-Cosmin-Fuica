@@ -25,6 +25,7 @@ public class SalaryService : ISalaryService
             .Where(p => p.Salary != null)
             .Select(p => new SalaryWithFullNameDto
             {
+                PersonId = p.Id,
                 FullName = p.Name + " " + p.Surname,
                 Amount = p.Salary.Amount
             })
@@ -59,6 +60,10 @@ public class SalaryService : ISalaryService
 
     public async Task<bool> UpdateSalaryAsync(int personId, int newSalaryAmount)
     {
+        const int MaxSalaryAmount = int.MaxValue; // Define a maximum limit for salary amount
+
+        if (newSalaryAmount <= 0 || newSalaryAmount > MaxSalaryAmount) throw new ArgumentOutOfRangeException(nameof(newSalaryAmount), $"Salary amount must be greater than 0 and less than or equal to {MaxSalaryAmount}");
+
         var person = await _context.Persons
             .Include(p => p.Salary)
             .FirstOrDefaultAsync(p => p.Id == personId);

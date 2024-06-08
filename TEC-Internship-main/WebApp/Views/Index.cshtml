@@ -1,0 +1,81 @@
+﻿@model IEnumerable<WebApp.Models.SalaryWithFullNameDto>
+
+@{
+    ViewData["Title"] = "Salaries";
+}
+
+@* <div class="container mt-5">
+    <h2>Salaries</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Salary</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var salary in Model)
+            {
+                <tr>
+                    <td>@salary.FullName</td>
+                    <td>
+                        <span class="salary-amount" data-person-id="@salary.PersonId">@salary.Amount</span>
+                        <input type="number" class="form-control salary-input" data-person-id="@salary.PersonId" value="@salary.Amount" style="display: none;" />
+                    </td>
+                    <td>
+                        <button class="btn btn-primary edit-btn" data-person-id="@salary.PersonId">Edit</button>
+                        <button class="btn btn-success save-btn" data-person-id="@salary.PersonId" style="display: none;">Save</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const editButtons = document.querySelectorAll('.edit-btn');
+            const saveButtons = document.querySelectorAll('.save-btn');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const personId = this.getAttribute('data-person-id');
+                    const salaryAmount = document.querySelector(`.salary-amount[data-person-id="${personId}"]`);
+                    const salaryInput = document.querySelector(`.salary-input[data-person-id="${personId}"]`);
+                    const saveButton = document.querySelector(`.save-btn[data-person-id="${personId}"]`);
+
+                    salaryAmount.style.display = 'none';
+                    salaryInput.style.display = 'block';
+                    this.style.display = 'none';
+                    saveButton.style.display = 'block';
+                });
+            });
+
+            saveButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const personId = this.getAttribute('data-person-id');
+                    const salaryInput = document.querySelector(`.salary-input[data-person-id="${personId}"]`);
+                    const newAmount = salaryInput.value;
+
+                    fetch('/Salary/UpdateSalary', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({ personId, newAmount })
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                location.reload();
+                            } else {
+                                alert('Failed to update salary');
+                            }
+                        });
+                });
+            });
+        });
+    </script>
+} *@

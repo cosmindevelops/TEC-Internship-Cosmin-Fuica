@@ -31,6 +31,12 @@ public class PersonService : IPersonService
         return _mapper.Map<IEnumerable<PersonDto>>(persons);
     }
 
+    // Method to get the total number of persons
+    public async Task<int> GetTotalPersonsAsync()
+    {
+        return await _context.Persons.CountAsync();
+    }
+
     // Method to create a new person
     public async Task<PersonDto> CreatePersonAsync(CreateUpdatePersonDto personDto)
     {

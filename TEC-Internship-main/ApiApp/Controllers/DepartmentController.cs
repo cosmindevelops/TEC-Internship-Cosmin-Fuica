@@ -7,6 +7,7 @@ namespace ApiApp.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "User,Admin")]
 public class DepartmentController : BaseController
 {
     private readonly IDepartmentService _departmentService;
@@ -16,7 +17,6 @@ public class DepartmentController : BaseController
         _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllDepartments()
     {
@@ -24,7 +24,6 @@ public class DepartmentController : BaseController
         return Ok(departments);
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDepartment(int id)
     {
@@ -37,7 +36,13 @@ public class DepartmentController : BaseController
         return Ok(department);
     }
 
-    [Authorize(Roles = "User,Admin")]
+    [HttpGet("total")]
+    public async Task<IActionResult> GetTotalDepartments()
+    {
+        var totalDepartments = await _departmentService.GetTotalDepartmentsAsync();
+        return Ok(new { TotalDepartments = totalDepartments });
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateDepartment([FromBody] CreateUpdateDepartmentDto departmentDto)
     {
@@ -45,7 +50,6 @@ public class DepartmentController : BaseController
         return CreatedAtAction(nameof(GetDepartment), new { id = createdDepartment.DepartmentId }, createdDepartment);
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDepartment(int id)
     {
@@ -58,11 +62,22 @@ public class DepartmentController : BaseController
         return NoContent();
     }
 
-    [Authorize(Roles = "User,Admin")]
     [HttpPut("ChangePersonDepartment")]
     public async Task<IActionResult> ChangePersonDepartment(int personId, string newDepartmentName)
     {
         var result = await _departmentService.ChangePersonDepartmentAsync(personId, newDepartmentName);
+        return NoContent();
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateDepartmentName(int id, [FromBody] CreateUpdateDepartmentDto departmentDto)
+    {
+        var updated = await _departmentService.UpdateDepartmentNameAsync(id, departmentDto.DepartmentName);
+        if (!updated)
+        {
+            return NotFound();
+        }
+
         return NoContent();
     }
 }

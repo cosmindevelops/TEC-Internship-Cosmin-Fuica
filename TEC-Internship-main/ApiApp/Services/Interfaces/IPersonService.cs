@@ -13,4 +13,6 @@ public interface IPersonService
     Task<bool> DeletePersonAsync(int personId);
 
     Task<PersonDto> GetPersonAsync(int personId);
+
+    Task<int> GetTotalPersonsAsync();
 }

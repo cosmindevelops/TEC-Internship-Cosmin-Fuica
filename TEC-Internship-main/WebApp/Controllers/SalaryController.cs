@@ -1,40 +1,34 @@
-﻿using WebApp.Models;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
+using WebApp.Services.Interfaces;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class SalaryController : Controller
 {
-    public class SalaryController : Controller
+    private readonly ISalaryService _salaryService;
+
+    public SalaryController(ISalaryService salaryService)
     {
-        public async Task<IActionResult> Index()
+        _salaryService = salaryService ?? throw new ArgumentNullException(nameof(salaryService));
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var salaries = await _salaryService.GetAllSalariesAsync();
+        return View(salaries);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateSalary(int personId, int newSalaryAmount)
+    {
+        var success = await _salaryService.UpdateSalaryAsync(personId, newSalaryAmount);
+        if (!success)
         {
-            List<Salary> list = new List<Salary>();
-            HttpClient client = new HttpClient();
-            HttpResponseMessage message = await client.GetAsync("http://localhost:5229/api/Salaries");
-            if (message.IsSuccessStatusCode)
-            {
-                var jstring = await message.Content.ReadAsStringAsync();
-                list = JsonConvert.DeserializeObject<List<Salary>>(jstring);
-                return View(list);
-            }
-            else
-                return View(list);
+            return BadRequest("Failed to update salary");
         }
 
-        public async Task<IActionResult> Delete(int Id)
-        {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage message = await client.DeleteAsync("http://localhost:5229/api/Salaries/" + Id);
-            if (message.IsSuccessStatusCode)
-                return RedirectToAction("Index");
-            else
-                return View();
-
-        }
+        return RedirectToAction("Index");
     }
 }

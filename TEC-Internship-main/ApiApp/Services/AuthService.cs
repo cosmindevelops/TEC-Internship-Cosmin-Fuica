@@ -1,8 +1,8 @@
 ﻿using ApiApp.Common.Dto;
 using ApiApp.Common.Exceptions;
 using ApiApp.Data;
-using Internship.Model;
 using ApiApp.Services.Interfaces;
+using Internship.Model;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,7 +66,7 @@ public class AuthService : IAuthService
 
         var token = _jwtTokenService.GenerateToken(user, roles);
 
-        return new AuthResponseDto { UserId = user.Id, Token = token };
+        return new AuthResponseDto { UserId = user.Id, Token = token, Username = user.Username };
     }
 
     /// <summary>
