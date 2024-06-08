@@ -11,7 +11,6 @@
         icon.addEventListener('click', function () {
             const personId = this.getAttribute('data-person-id');
 
-            // Cancel the active edit if another row is being edited
             if (activeEditPersonId && activeEditPersonId !== personId) {
                 const previousSalaryAmount = document.getElementById(`salary-amount-${activeEditPersonId}`);
                 const previousSalaryInput = document.getElementById(`salary-input-${activeEditPersonId}`);
@@ -40,7 +39,6 @@
                 activeEditPersonId = personId;
             } else {
                 toastr.error(`Elements not found for person ID ${personId}`, 'Error');
-                console.error(`Elements not found for person ID ${personId}`);
             }
         });
     });
@@ -52,14 +50,23 @@
 
             if (!salaryInput) {
                 toastr.error(`Could not find salary input for person ID ${personId}`, 'Error');
-                console.error(`Could not find salary input for person ID ${personId}`);
                 return;
             }
 
             const newAmount = parseInt(salaryInput.value, 10);
 
-            if (isNaN(newAmount) || newAmount <= 0 || newAmount > MAX_INT_VALUE) {
-                toastr.error(`Salary must be a number greater than 0 and less than or equal to ${MAX_INT_VALUE}`, 'Validation Error');
+            if (isNaN(newAmount)) {
+                toastr.error('Salary must be a number.', 'Validation Error');
+                return;
+            }
+
+            if (newAmount <= 0) {
+                toastr.error('Salary must be greater than 0.', 'Validation Error');
+                return;
+            }
+
+            if (newAmount > MAX_INT_VALUE) {
+                toastr.error(`Salary must be less than or equal to ${MAX_INT_VALUE}.`, 'Validation Error');
                 return;
             }
 
@@ -68,7 +75,6 @@
 
             if (!csrfToken) {
                 toastr.error('Failed to update salary: CSRF token not found', 'Error');
-                console.error('CSRF token not found');
                 return;
             }
 
@@ -88,7 +94,6 @@
                 })
                 .catch(error => {
                     toastr.error('Error updating salary', 'Error');
-                    console.error('Error updating salary:', error);
                 });
         });
     });
@@ -111,7 +116,6 @@
                 activeEditPersonId = null;
             } else {
                 toastr.error(`Elements not found for person ID ${personId}`, 'Error');
-                console.error(`Elements not found for person ID ${personId}`);
             }
         });
     });

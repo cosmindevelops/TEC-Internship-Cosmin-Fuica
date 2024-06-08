@@ -74,7 +74,14 @@ function register() {
     };
     AuthService.register(model)
         .then(data => {
-            alert('Registration successful');
+            return AuthService.login(model);
+        })
+        .then(loginData => {
+            if (loginData.redirectUrl) {
+                window.location.href = loginData.redirectUrl;
+            } else {
+                alert('Login after registration failed');
+            }
         })
         .catch(error => {
             alert('Registration failed');

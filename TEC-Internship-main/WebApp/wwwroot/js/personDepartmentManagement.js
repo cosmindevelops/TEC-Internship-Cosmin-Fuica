@@ -70,7 +70,7 @@
             });
     });
 
-    document.getElementById('createDepartmentButton').addEventListener('click', function () {
+    document.getElementById('createDepartmentButton').addEventListener('click', function (event) {
         event.preventDefault();
 
         const departmentName = document.getElementById('departmentName').value.trim();

@@ -159,7 +159,6 @@
                 })
                 .catch(error => {
                     toastr.error('Error deleting person', 'Error');
-                    console.error('Error deleting person:', error);
                 });
         });
     });
