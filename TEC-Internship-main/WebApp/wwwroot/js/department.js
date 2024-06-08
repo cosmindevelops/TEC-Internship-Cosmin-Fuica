@@ -54,16 +54,9 @@
 
             const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
             const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
-            const token = localStorage.getItem('token');
 
             if (!csrfToken) {
                 toastr.error('Failed to update department: CSRF token not found');
-                return;
-            }
-
-            if (!token) {
-                toastr.error('Failed to create person: Authorization token not found', 'Error');
-                console.error('Authorization token not found');
                 return;
             }
 
@@ -71,8 +64,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'RequestVerificationToken': csrfToken,
-                    'Authorization': `Bearer ${token}`
+                    'RequestVerificationToken': csrfToken
                 }
             })
                 .then(response => {
@@ -113,16 +105,9 @@
 
             const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
             const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
-            const token = localStorage.getItem('token');
 
             if (!csrfToken) {
                 toastr.error('Failed to delete department: CSRF token not found');
-                return;
-            }
-
-            if (!token) {
-                toastr.error('Failed to create person: Authorization token not found', 'Error');
-                console.error('Authorization token not found');
                 return;
             }
 
@@ -130,8 +115,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'RequestVerificationToken': csrfToken,
-                    'Authorization': `Bearer ${token}`
+                    'RequestVerificationToken': csrfToken
                 }
             })
                 .then(response => {
@@ -157,24 +141,17 @@
 
         const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
         const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
-        const token = localStorage.getItem('token');
 
         if (!csrfToken) {
             toastr.error('Failed to create department: CSRF token not found');
             return;
         }
 
-        if (!token) {
-            toastr.error('Failed to create person: Authorization token not found', 'Error');
-            return;
-        }
-        
         fetch(`${apiUrl}/department`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'RequestVerificationToken': csrfToken,
-                'Authorization': `Bearer ${token}`
+                'RequestVerificationToken': csrfToken
             },
             body: JSON.stringify({ departmentName: newDepartmentName })
         })

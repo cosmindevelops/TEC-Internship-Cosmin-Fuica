@@ -41,7 +41,6 @@ public class SalaryService : ISalaryService
 
             var apiSalaries = await response.Content.ReadFromJsonAsync<IEnumerable<SalaryWithFullNameDto>>();
 
-            // Manually map ApiApp.Common.Dto.SalaryWithFullNameDto to WebApp.Models.SalaryWithFullNameDto
             var webSalaries = apiSalaries.Select(s => new WebApp.Models.SalaryWithFullNameDto
             {
                 PersonId = s.PersonId,

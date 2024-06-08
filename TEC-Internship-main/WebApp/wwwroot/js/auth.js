@@ -80,3 +80,8 @@ function register() {
             alert('Registration failed');
         });
 }
+
+function logout() {
+    AuthService.logout();
+    window.location.href = '/auth';
+}

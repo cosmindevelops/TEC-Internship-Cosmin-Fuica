@@ -1,6 +1,5 @@
 ﻿using ApiApp.Common.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Threading.Tasks;
 using WebApp.Services.Interfaces;

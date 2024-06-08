@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using WebApp.Services;
 using WebApp.Services.Interfaces;
 
 namespace WebApp.Controllers;
