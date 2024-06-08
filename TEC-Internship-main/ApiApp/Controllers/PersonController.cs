@@ -16,7 +16,7 @@ public class PersonController : BaseController
         _personService = personService ?? throw new ArgumentNullException(nameof(personService));
     }
 
-    [AllowAnonymous]
+    [Authorize(Roles = "User,Admin")]
     [HttpGet]
     public async Task<IActionResult> GetAllPersons()
     {
@@ -37,7 +37,7 @@ public class PersonController : BaseController
         return Ok(person);
     }
 
-    [AllowAnonymous]
+    [Authorize(Roles = "User,Admin")]
     [HttpGet("total")]
     public async Task<IActionResult> GetTotalPersons()
     {

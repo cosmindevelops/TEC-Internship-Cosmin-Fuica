@@ -11,7 +11,6 @@
         icon.addEventListener('click', function () {
             const departmentId = this.getAttribute('data-department-id');
 
-            // Cancel the active edit if another row is being edited
             if (activeEditDepartmentId && activeEditDepartmentId !== departmentId) {
                 const previousDepartmentName = document.getElementById(`department-name-${activeEditDepartmentId}`);
                 const previousDepartmentInput = document.getElementById(`department-input-${activeEditDepartmentId}`);
@@ -55,9 +54,16 @@
 
             const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
             const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+            const token = localStorage.getItem('token');
 
             if (!csrfToken) {
                 toastr.error('Failed to update department: CSRF token not found');
+                return;
+            }
+
+            if (!token) {
+                toastr.error('Failed to create person: Authorization token not found', 'Error');
+                console.error('Authorization token not found');
                 return;
             }
 
@@ -65,12 +71,12 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'RequestVerificationToken': csrfToken
+                    'RequestVerificationToken': csrfToken,
+                    'Authorization': `Bearer ${token}`
                 }
             })
                 .then(response => {
                     if (response.ok) {
-                        toastr.success('Department updated successfully');
                         location.reload();
                     } else {
                         toastr.error('Failed to update department');
@@ -107,9 +113,16 @@
 
             const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
             const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+            const token = localStorage.getItem('token');
 
             if (!csrfToken) {
                 toastr.error('Failed to delete department: CSRF token not found');
+                return;
+            }
+
+            if (!token) {
+                toastr.error('Failed to create person: Authorization token not found', 'Error');
+                console.error('Authorization token not found');
                 return;
             }
 
@@ -117,12 +130,12 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'RequestVerificationToken': csrfToken
+                    'RequestVerificationToken': csrfToken,
+                    'Authorization': `Bearer ${token}`
                 }
             })
                 .then(response => {
                     if (response.ok) {
-                        toastr.success('Department deleted successfully');
                         location.reload();
                     } else {
                         toastr.error('Failed to delete department');
@@ -134,7 +147,6 @@
         });
     });
 
-
     createIcon.addEventListener('click', function () {
         const newDepartmentName = document.getElementById('new-department-name').value.trim();
 
@@ -145,13 +157,18 @@
 
         const csrfTokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
         const csrfToken = csrfTokenElement ? csrfTokenElement.value : '';
+        const token = localStorage.getItem('token');
 
         if (!csrfToken) {
             toastr.error('Failed to create department: CSRF token not found');
             return;
         }
 
-        const token = localStorage.getItem('token');
+        if (!token) {
+            toastr.error('Failed to create person: Authorization token not found', 'Error');
+            return;
+        }
+        
         fetch(`${apiUrl}/department`, {
             method: 'POST',
             headers: {
@@ -163,7 +180,6 @@
         })
             .then(response => {
                 if (response.ok) {
-                    toastr.success('Department created successfully');
                     location.reload();
                 } else {
                     toastr.error('Failed to create department');

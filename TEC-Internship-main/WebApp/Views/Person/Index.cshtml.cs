@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace WebApp.Views
+namespace WebApp.Views.Person
 {
     public class IndexModel : PageModel
     {

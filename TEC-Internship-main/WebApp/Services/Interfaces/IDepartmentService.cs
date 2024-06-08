@@ -1,5 +1,4 @@
-﻿using ApiApp.Common.Dto;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace WebApp.Services.Interfaces;

@@ -1,7 +1,9 @@
 ﻿using ApiApp.Common.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
+using WebApp.Services;
 using WebApp.Services.Interfaces;
 
 namespace WebApp.Controllers;
@@ -12,7 +14,7 @@ public class AuthController : Controller
 
     public AuthController(IAuthService authService)
     {
-        _authService = authService;
+        _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
     [HttpGet("auth")]

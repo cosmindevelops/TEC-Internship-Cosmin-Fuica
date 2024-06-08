@@ -25,24 +25,23 @@ public class DepartmentController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> CreateDepartment([FromBody] string departmentName)
+    {
+        var success = await _departmentService.CreateDepartmentAsync(departmentName);
+        if (!success)
+        {
+            return BadRequest("Failed to create department");
+        }
+        return Ok();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> UpdateDepartment(int departmentId, string newDepartmentName)
     {
         var success = await _departmentService.UpdateDepartmentAsync(departmentId, newDepartmentName);
         if (!success)
         {
             return BadRequest("Failed to update department");
-        }
-
-        return RedirectToAction("Index");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateDepartment([FromForm] string departmentName)
-    {
-        var success = await _departmentService.CreateDepartmentAsync(departmentName);
-        if (!success)
-        {
-            return BadRequest("Failed to create department");
         }
 
         return RedirectToAction("Index");

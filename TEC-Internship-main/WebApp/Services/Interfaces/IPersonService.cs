@@ -6,5 +6,11 @@ namespace WebApp.Services.Interfaces;
 
 public interface IPersonService
 {
-    Task<List<PersonDto>> GetPersonsAsync();
+    Task<IEnumerable<WebApp.Models.PersonDto>> GetAllPersonsAsync();
+
+    Task<bool> CreatePersonAsync(CreateUpdatePersonDto personDto);
+
+    Task<bool> UpdatePersonAsync(int personId, CreateUpdatePersonDto personDto);
+
+    Task<bool> DeletePersonAsync(int personId);
 }
