@@ -32,7 +32,7 @@ public class AuthService : IAuthService
     {
         if (model == null) throw new ArgumentNullException(nameof(model));
 
-        if (await UserExistsAsync(model.Username, model.Email)) throw new UserAlreadyExistsException("User already exists.");
+        if (await UserExistsAsync(model.Email)) throw new UserAlreadyExistsException("User already exists.");
 
         var user = new User
         {
@@ -75,9 +75,9 @@ public class AuthService : IAuthService
     /// <param name="username">The username to check.</param>
     /// <param name="email">The email to check.</param>
     /// <returns>A task representing the asynchronous operation. The task result contains a boolean indicating whether the user exists.</returns>
-    private async Task<bool> UserExistsAsync(string username, string email)
+    private async Task<bool> UserExistsAsync(string email)
     {
-        return await _context.Users.AnyAsync(u => u.Username == username || u.Email == email);
+        return await _context.Users.AnyAsync(u => u.Email == email);
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.IO;
 using System.Net.Http.Headers;
 using System.Text;
 using WebApp.Common.Config;
@@ -94,11 +96,21 @@ public class Startup
             options.IdleTimeout = TimeSpan.FromMinutes(30);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
+
+            // For local development
+            options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+            options.Cookie.SameSite = SameSiteMode.Lax;
         });
+
         services.AddAntiforgery(options =>
         {
             options.HeaderName = "RequestVerificationToken";
         });
+
+        // Persist Data Protection keys to the file system
+        services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo(@"/root/.aspnet/DataProtection-Keys"))
+            .SetApplicationName("MyApp");
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -110,10 +122,10 @@ public class Startup
         else
         {
             app.UseExceptionHandler("/Home/Error");
-            app.UseHsts();
+            // app.UseHsts();
         }
 
-        app.UseHttpsRedirection();
+        // app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();

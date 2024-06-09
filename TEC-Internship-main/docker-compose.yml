@@ -1,0 +1,37 @@
+services:
+  apiapp:
+    build:
+      context: .
+      dockerfile: ApiApp/Dockerfile
+    ports:
+      - "6070:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    volumes:
+      - db-data:/app/data
+      - key-data:/root/.aspnet/DataProtection-Keys
+    networks:
+      - tec-network
+
+  webapp:
+    build:
+      context: .
+      dockerfile: WebApp/Dockerfile
+    ports:
+      - "44315:80" 
+    depends_on:
+      - apiapp
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    volumes:
+      - db-data:/app/data
+      - key-data:/root/.aspnet/DataProtection-Keys
+    networks:
+      - tec-network
+
+networks:
+  tec-network:
+
+volumes:
+  db-data:
+  key-data:

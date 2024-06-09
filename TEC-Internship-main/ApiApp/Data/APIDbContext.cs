@@ -49,6 +49,9 @@ public class APIDbContext : DbContext
     {
         Console.WriteLine("Starting database seeding...");
 
+        // Ensure the database is created
+        context.Database.EnsureCreated();
+
         // Seed roles
         var roles = new List<Role>
         {
