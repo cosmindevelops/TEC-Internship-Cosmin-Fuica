@@ -25,16 +25,19 @@ public class DepartmentService : IDepartmentService
         _apiUrl = configuration["ApiSettings:ApiUrl"];
     }
 
+    /// <summary>
+    /// Retrieves all departments from the API.
+    /// </summary>
+    /// <returns>A list of <see cref="WebApp.Models.DepartmentDto"/>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<IEnumerable<WebApp.Models.DepartmentDto>> GetAllDepartmentsAsync()
     {
         try
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiUrl}/department");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -51,12 +54,16 @@ public class DepartmentService : IDepartmentService
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error fetching departments: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error fetching departments", ex);
         }
     }
 
+    /// <summary>
+    /// Creates a new department.
+    /// </summary>
+    /// <param name="departmentName">The name of the department to create.</param>
+    /// <returns><c>true</c> if the creation was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<bool> CreateDepartmentAsync(string departmentName)
     {
         try
@@ -67,22 +74,25 @@ public class DepartmentService : IDepartmentService
             {
                 Content = JsonContent.Create(createData)
             };
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error creating department: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error creating department", ex);
         }
     }
 
+    /// <summary>
+    /// Updates an existing department.
+    /// </summary>
+    /// <param name="departmentId">The ID of the department to update.</param>
+    /// <param name="newDepartmentName">The new name of the department.</param>
+    /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<bool> UpdateDepartmentAsync(int departmentId, string newDepartmentName)
     {
         try
@@ -93,41 +103,39 @@ public class DepartmentService : IDepartmentService
             {
                 Content = JsonContent.Create(updateData)
             };
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error updating department: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error updating department", ex);
         }
     }
 
+    /// <summary>
+    /// Deletes a department.
+    /// </summary>
+    /// <param name="departmentId">The ID of the department to delete.</param>
+    /// <returns><c>true</c> if the deletion was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<bool> DeleteDepartmentAsync(int departmentId)
     {
         try
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var request = new HttpRequestMessage(HttpMethod.Delete, $"{_apiUrl}/department/{departmentId}");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error deleting department: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error deleting department", ex);
         }
     }
 }

@@ -22,16 +22,19 @@ public class DashboardService : IDashboardService
         _apiUrl = configuration["ApiSettings:ApiUrl"];
     }
 
+    /// <summary>
+    /// Retrieves the total number of persons.
+    /// </summary>
+    /// <returns>The total number of persons as an integer.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<int> GetTotalPersonsAsync()
     {
         try
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiUrl}/person/total");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -40,22 +43,23 @@ public class DashboardService : IDashboardService
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error fetching total persons: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error fetching total persons", ex);
         }
     }
 
+    /// <summary>
+    /// Retrieves the total number of departments.
+    /// </summary>
+    /// <returns>The total number of departments as an integer.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<int> GetTotalDepartmentsAsync()
     {
         try
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiUrl}/department/total");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token))  request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -64,9 +68,7 @@ public class DashboardService : IDashboardService
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error fetching total departments: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error fetching total departments", ex);
         }
     }
 

@@ -16,12 +16,21 @@ public class AuthController : Controller
         _authService = authService ?? throw new ArgumentNullException(nameof(authService));
     }
 
+    /// <summary>
+    /// Displays the authentication view.
+    /// </summary>
+    /// <returns>The authentication view.</returns>
     [HttpGet("auth")]
     public IActionResult Index()
     {
         return View();
     }
 
+    /// <summary>
+    /// Logs in a user.
+    /// </summary>
+    /// <param name="model">The login model containing user credentials.</param>
+    /// <returns>An <see cref="IActionResult"/> indicating the result of the login operation.</returns>
     [HttpPost("auth/login")]
     public async Task<IActionResult> Login([FromBody] LoginModelDto model)
     {
@@ -42,6 +51,11 @@ public class AuthController : Controller
         });
     }
 
+    /// <summary>
+    /// Registers a new user.
+    /// </summary>
+    /// <param name="model">The registration model containing user details.</param>
+    /// <returns>An <see cref="IActionResult"/> indicating the result of the registration operation.</returns>
     [HttpPost("auth/register")]
     public async Task<IActionResult> Register([FromBody] RegisterModelDto model)
     {

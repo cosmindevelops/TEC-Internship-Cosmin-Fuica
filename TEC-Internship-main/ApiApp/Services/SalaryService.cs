@@ -18,6 +18,10 @@ public class SalaryService : ISalaryService
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
+    /// <summary>
+    /// Retrieves all salaries from the database.
+    /// </summary>
+    /// <returns>A list of <see cref="SalaryWithFullNameDto"/>.</returns>
     public async Task<IEnumerable<SalaryWithFullNameDto>> GetAllSalariesAsync()
     {
         var salaries = await _context.Persons
@@ -34,6 +38,12 @@ public class SalaryService : ISalaryService
         return salaries;
     }
 
+    /// <summary>
+    /// Retrieves the salary of a person by their ID.
+    /// </summary>
+    /// <param name="personId">The ID of the person to retrieve the salary for.</param>
+    /// <returns>The <see cref="SalaryDto"/> of the person's salary.</returns>
+    /// <exception cref="SalaryNotFoundException">Thrown when the salary is not found.</exception>
     public async Task<SalaryDto> GetSalaryByPersonIdAsync(int personId)
     {
         var person = await _context.Persons
@@ -45,6 +55,12 @@ public class SalaryService : ISalaryService
         return _mapper.Map<SalaryDto>(person.Salary);
     }
 
+    /// <summary>
+    /// Deletes the salary of a person.
+    /// </summary>
+    /// <param name="personId">The ID of the person to delete the salary for.</param>
+    /// <returns><c>true</c> if the deletion was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="SalaryNotFoundException">Thrown when the salary is not found.</exception>
     public async Task<bool> DeleteSalaryAsync(int personId)
     {
         var person = await _context.Persons
@@ -58,9 +74,17 @@ public class SalaryService : ISalaryService
         return true;
     }
 
+    /// <summary>
+    /// Updates the salary of a person.
+    /// </summary>
+    /// <param name="personId">The ID of the person to update the salary for.</param>
+    /// <param name="newSalaryAmount">The new salary amount.</param>
+    /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="SalaryNotFoundException">Thrown when the salary is not found.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the new salary amount is invalid.</exception>
     public async Task<bool> UpdateSalaryAsync(int personId, int newSalaryAmount)
     {
-        const int MaxSalaryAmount = int.MaxValue; // Define a maximum limit for salary amount
+        const int MaxSalaryAmount = int.MaxValue;
 
         if (newSalaryAmount <= 0 || newSalaryAmount > MaxSalaryAmount) throw new ArgumentOutOfRangeException(nameof(newSalaryAmount), $"Salary amount must be greater than 0 and less than or equal to {MaxSalaryAmount}");
 

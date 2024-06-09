@@ -19,6 +19,10 @@ public class DepartmentService : IDepartmentService
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
+    /// <summary>
+    /// Retrieves all departments from the database, excluding "Unassigned" departments.
+    /// </summary>
+    /// <returns>A list of <see cref="DepartmentDto"/>.</returns>
     public async Task<IEnumerable<DepartmentDto>> GetAllDepartmentsAsync()
     {
         var departments = await _context.Departments
@@ -27,6 +31,12 @@ public class DepartmentService : IDepartmentService
         return _mapper.Map<IEnumerable<DepartmentDto>>(departments);
     }
 
+    /// <summary>
+    /// Retrieves a department by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the department to retrieve.</param>
+    /// <returns>The <see cref="DepartmentDto"/> of the retrieved department.</returns>
+    /// <exception cref="DepartmentNotFoundException">Thrown when the department is not found.</exception>
     public async Task<DepartmentDto> GetDepartmentByIdAsync(int id)
     {
         var department = await _context.Departments.FindAsync(id);
@@ -36,7 +46,10 @@ public class DepartmentService : IDepartmentService
         return _mapper.Map<DepartmentDto>(department);
     }
 
-    // Method to get the total number of departments excluding "Unassigned"
+    /// <summary>
+    /// Gets the total number of departments excluding "Unassigned".
+    /// </summary>
+    /// <returns>The total number of departments as an integer.</returns>
     public async Task<int> GetTotalDepartmentsAsync()
     {
         return await _context.Departments
@@ -44,6 +57,12 @@ public class DepartmentService : IDepartmentService
             .CountAsync();
     }
 
+    /// <summary>
+    /// Creates a new department and adds it to the database.
+    /// </summary>
+    /// <param name="departmentDto">The DTO containing department data.</param>
+    /// <returns>The created <see cref="DepartmentDto"/>.</returns>
+    /// <exception cref="DuplicateDepartmentException">Thrown when a department with the same name already exists.</exception>
     public async Task<DepartmentDto> CreateDepartmentAsync(CreateUpdateDepartmentDto departmentDto)
     {
         var existingDepartment = await _context.Departments
@@ -58,6 +77,12 @@ public class DepartmentService : IDepartmentService
         return _mapper.Map<DepartmentDto>(department);
     }
 
+    /// <summary>
+    /// Deletes a department from the database.
+    /// </summary>
+    /// <param name="departmentId">The ID of the department to delete.</param>
+    /// <returns><c>true</c> if the deletion was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="DepartmentNotFoundException">Thrown when the department is not found.</exception>
     public async Task<bool> DeleteDepartmentAsync(int departmentId)
     {
         var department = await _context.Departments.FindAsync(departmentId);
@@ -73,6 +98,13 @@ public class DepartmentService : IDepartmentService
         return true;
     }
 
+    /// <summary>
+    /// Updates the name of an existing department.
+    /// </summary>
+    /// <param name="departmentId">The ID of the department to update.</param>
+    /// <param name="newDepartmentName">The new name of the department.</param>
+    /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="DepartmentNotFoundException">Thrown when the department is not found.</exception>
     public async Task<bool> UpdateDepartmentNameAsync(int departmentId, string newDepartmentName)
     {
         var department = await _context.Departments.FindAsync(departmentId);
@@ -85,6 +117,13 @@ public class DepartmentService : IDepartmentService
         return true;
     }
 
+    /// <summary>
+    /// Changes the department of a person.
+    /// </summary>
+    /// <param name="personId">The ID of the person to update.</param>
+    /// <param name="newDepartmentName">The new department name for the person.</param>
+    /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="PersonNotFoundException">Thrown when the person is not found.</exception>
     public async Task<bool> ChangePersonDepartmentAsync(int personId, string newDepartmentName)
     {
         var person = await _context.Persons.Include(p => p.Position).ThenInclude(pos => pos.Department).FirstOrDefaultAsync(p => p.Id == personId);
@@ -105,6 +144,10 @@ public class DepartmentService : IDepartmentService
         return true;
     }
 
+    /// <summary>
+    /// Retrieves or creates an "Unassigned" department.
+    /// </summary>
+    /// <returns>The "Unassigned" <see cref="Department"/> entity.</returns>
     private async Task<Department> GetOrCreateUnassignedDepartmentAsync()
     {
         var unassignedDepartment = await _context.Departments
@@ -120,6 +163,11 @@ public class DepartmentService : IDepartmentService
         return unassignedDepartment;
     }
 
+    /// <summary>
+    /// Reassigns persons from a specified department to the "Unassigned" department.
+    /// </summary>
+    /// <param name="departmentId">The ID of the department to reassign from.</param>
+    /// <param name="unassignedDepartmentId">The ID of the "Unassigned" department.</param>
     private async Task ReassignPersonsToUnassignedDepartmentAsync(int departmentId, int unassignedDepartmentId)
     {
         var personsToReassign = await _context.Persons
