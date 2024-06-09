@@ -15,6 +15,10 @@ public class DashboardController : Controller
         _dashboardService = dashboardService ?? throw new ArgumentNullException(nameof(dashboardService));
     }
 
+    /// <summary>
+    /// Displays the dashboard view.
+    /// </summary>
+    /// <returns>The dashboard view with total persons and departments.</returns>
     public async Task<IActionResult> Index()
     {
         var totalPersons = await _dashboardService.GetTotalPersonsAsync();

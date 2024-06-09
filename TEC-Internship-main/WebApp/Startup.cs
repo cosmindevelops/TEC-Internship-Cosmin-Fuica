@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
 using WebApp.Common.Config;
 using WebApp.Services;
 using WebApp.Services.Interfaces;
@@ -123,6 +124,7 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
 
+        // Middleware to redirect to /auth if no token is found and the path is not /auth
         app.Use(async (context, next) =>
         {
             var token = context.Session.GetString("Token");
@@ -136,6 +138,12 @@ public class Startup
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapGet("/", context =>
+            {
+                context.Response.Redirect("/auth");
+                return Task.CompletedTask;
+            });
+
             endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -21,6 +21,12 @@ public class AuthService : IAuthService
         _apiUrl = configuration["ApiSettings:ApiUrl"];
     }
 
+    /// <summary>
+    /// Logs in a user.
+    /// </summary>
+    /// <param name="model">The login model containing user credentials.</param>
+    /// <returns>The authentication response containing the token and username.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<AuthResponseDto> LoginAsync(LoginModelDto model)
     {
         var response = await _httpClient.PostAsJsonAsync($"{_apiUrl}/auth/login", model);
@@ -34,12 +40,22 @@ public class AuthService : IAuthService
         return authResponse;
     }
 
+    /// <summary>
+    /// Registers a new user.
+    /// </summary>
+    /// <param name="model">The registration model containing user details.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task RegisterAsync(RegisterModelDto model)
     {
         var response = await _httpClient.PostAsJsonAsync($"{_apiUrl}/auth/register", model);
         response.EnsureSuccessStatusCode();
     }
 
+    /// <summary>
+    /// Gets the current authentication token from the session.
+    /// </summary>
+    /// <returns>The authentication token as a string.</returns>
     public string GetToken()
     {
         return _httpContextAccessor.HttpContext.Session.GetString("Token");

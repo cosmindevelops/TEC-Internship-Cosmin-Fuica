@@ -25,16 +25,19 @@ public class PersonService : IPersonService
         _apiUrl = configuration["ApiSettings:ApiUrl"];
     }
 
+    /// <summary>
+    /// Retrieves all persons from the API.
+    /// </summary>
+    /// <returns>A list of <see cref="WebApp.Models.PersonDto"/>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<IEnumerable<WebApp.Models.PersonDto>> GetAllPersonsAsync()
     {
         try
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiUrl}/person");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -60,11 +63,16 @@ public class PersonService : IPersonService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching persons: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error fetching persons", ex);
         }
     }
 
+    /// <summary>
+    /// Creates a new person.
+    /// </summary>
+    /// <param name="personDto">The DTO containing person data.</param>
+    /// <returns><c>true</c> if the creation was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<bool> CreatePersonAsync(CreateUpdatePersonDto personDto)
     {
         try
@@ -74,21 +82,25 @@ public class PersonService : IPersonService
             {
                 Content = JsonContent.Create(personDto)
             };
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating person: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error creating person", ex);
         }
     }
 
+    /// <summary>
+    /// Updates an existing person.
+    /// </summary>
+    /// <param name="personId">The ID of the person to update.</param>
+    /// <param name="personDto">The DTO containing updated person data.</param>
+    /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<bool> UpdatePersonAsync(int personId, CreateUpdatePersonDto personDto)
     {
         var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
@@ -96,23 +108,25 @@ public class PersonService : IPersonService
         {
             Content = JsonContent.Create(personDto)
         };
-        if (!string.IsNullOrEmpty(token))
-        {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
+
+        if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _httpClient.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
 
+    /// <summary>
+    /// Deletes a person.
+    /// </summary>
+    /// <param name="personId">The ID of the person to delete.</param>
+    /// <returns><c>true</c> if the deletion was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<bool> DeletePersonAsync(int personId)
     {
         var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
         var request = new HttpRequestMessage(HttpMethod.Delete, $"{_apiUrl}/person/{personId}");
-        if (!string.IsNullOrEmpty(token))
-        {
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
+
+        if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _httpClient.SendAsync(request);
         return response.IsSuccessStatusCode;

@@ -17,6 +17,10 @@ public class DepartmentController : BaseController
         _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
     }
 
+    /// <summary>
+    /// Gets all departments.
+    /// </summary>
+    /// <returns>A list of all departments.</returns>
     [HttpGet]
     public async Task<IActionResult> GetAllDepartments()
     {
@@ -24,6 +28,11 @@ public class DepartmentController : BaseController
         return Ok(departments);
     }
 
+    /// <summary>
+    /// Gets a department by its ID.
+    /// </summary>
+    /// <param name="id">The ID of the department to retrieve.</param>
+    /// <returns>The department with the specified ID.</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetDepartment(int id)
     {
@@ -36,6 +45,10 @@ public class DepartmentController : BaseController
         return Ok(department);
     }
 
+    /// <summary>
+    /// Gets the total number of departments.
+    /// </summary>
+    /// <returns>The total number of departments.</returns>
     [HttpGet("total")]
     public async Task<IActionResult> GetTotalDepartments()
     {
@@ -43,6 +56,11 @@ public class DepartmentController : BaseController
         return Ok(new { TotalDepartments = totalDepartments });
     }
 
+    /// <summary>
+    /// Creates a new department.
+    /// </summary>
+    /// <param name="departmentDto">The DTO containing department data.</param>
+    /// <returns>The created department.</returns>
     [HttpPost]
     public async Task<IActionResult> CreateDepartment([FromBody] CreateUpdateDepartmentDto departmentDto)
     {
@@ -50,6 +68,11 @@ public class DepartmentController : BaseController
         return CreatedAtAction(nameof(GetDepartment), new { id = createdDepartment.DepartmentId }, createdDepartment);
     }
 
+    /// <summary>
+    /// Deletes a department.
+    /// </summary>
+    /// <param name="id">The ID of the department to delete.</param>
+    /// <returns>No content if the deletion was successful.</returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteDepartment(int id)
     {
@@ -62,6 +85,12 @@ public class DepartmentController : BaseController
         return NoContent();
     }
 
+    /// <summary>
+    /// Changes the department of a person.
+    /// </summary>
+    /// <param name="personId">The ID of the person to update.</param>
+    /// <param name="newDepartmentName">The new department name for the person.</param>
+    /// <returns>No content if the update was successful.</returns>
     [HttpPut("ChangePersonDepartment")]
     public async Task<IActionResult> ChangePersonDepartment(int personId, string newDepartmentName)
     {
@@ -69,6 +98,12 @@ public class DepartmentController : BaseController
         return NoContent();
     }
 
+    /// <summary>
+    /// Updates the name of a department.
+    /// </summary>
+    /// <param name="id">The ID of the department to update.</param>
+    /// <param name="departmentDto">The DTO containing the new department name.</param>
+    /// <returns>No content if the update was successful.</returns>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateDepartmentName(int id, [FromBody] CreateUpdateDepartmentDto departmentDto)
     {

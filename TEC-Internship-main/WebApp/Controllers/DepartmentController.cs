@@ -17,6 +17,10 @@ public class DepartmentController : Controller
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
+    /// <summary>
+    /// Displays the department management view.
+    /// </summary>
+    /// <returns>The department management view with a list of departments.</returns>
     public async Task<IActionResult> Index()
     {
         var departments = await _departmentService.GetAllDepartmentsAsync();
@@ -24,6 +28,11 @@ public class DepartmentController : Controller
         return View(departments);
     }
 
+    /// <summary>
+    /// Creates a new department.
+    /// </summary>
+    /// <param name="departmentName">The name of the department to create.</param>
+    /// <returns>An <see cref="IActionResult"/> indicating the result of the creation operation.</returns>
     [HttpPost]
     public async Task<IActionResult> CreateDepartment([FromBody] string departmentName)
     {
@@ -35,6 +44,12 @@ public class DepartmentController : Controller
         return Ok();
     }
 
+    /// <summary>
+    /// Updates an existing department.
+    /// </summary>
+    /// <param name="departmentId">The ID of the department to update.</param>
+    /// <param name="newDepartmentName">The new name of the department.</param>
+    /// <returns>An <see cref="IActionResult"/> indicating the result of the update operation.</returns>
     [HttpPost]
     public async Task<IActionResult> UpdateDepartment(int departmentId, string newDepartmentName)
     {
@@ -47,6 +62,11 @@ public class DepartmentController : Controller
         return RedirectToAction("Index");
     }
 
+    /// <summary>
+    /// Deletes a department.
+    /// </summary>
+    /// <param name="departmentId">The ID of the department to delete.</param>
+    /// <returns>An <see cref="IActionResult"/> indicating the result of the deletion operation.</returns>
     [HttpPost]
     public async Task<IActionResult> DeleteDepartment(int departmentId)
     {

@@ -19,7 +19,10 @@ public class PersonService : IPersonService
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    // Method to get all persons
+    /// <summary>
+    /// Retrieves all persons from the database.
+    /// </summary>
+    /// <returns>A list of <see cref="PersonDto"/>.</returns>
     public async Task<IEnumerable<PersonDto>> GetAllPersonsAsync()
     {
         var persons = await _context.Persons
@@ -31,13 +34,20 @@ public class PersonService : IPersonService
         return _mapper.Map<IEnumerable<PersonDto>>(persons);
     }
 
-    // Method to get the total number of persons
+    /// <summary>
+    /// Gets the total number of persons in the database.
+    /// </summary>
+    /// <returns>The total number of persons as an integer.</returns>
     public async Task<int> GetTotalPersonsAsync()
     {
         return await _context.Persons.CountAsync();
     }
 
-    // Method to create a new person
+    /// <summary>
+    /// Creates a new person and adds them to the database.
+    /// </summary>
+    /// <param name="personDto">The DTO containing person data.</param>
+    /// <returns>The created <see cref="PersonDto"/>.</returns>
     public async Task<PersonDto> CreatePersonAsync(CreateUpdatePersonDto personDto)
     {
         var department = await GetOrCreateDepartmentAsync(personDto.Position.Department.DepartmentName);
@@ -90,7 +100,13 @@ public class PersonService : IPersonService
         return _mapper.Map<PersonDto>(person);
     }
 
-    // Method to update a person's information
+    /// <summary>
+    /// Updates an existing person's information.
+    /// </summary>
+    /// <param name="personId">The ID of the person to update.</param>
+    /// <param name="personDto">The DTO containing updated person data.</param>
+    /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="PersonNotFoundException">Thrown when the person is not found.</exception>
     public async Task<bool> UpdatePersonAsync(int personId, CreateUpdatePersonDto personDto)
     {
         var person = await _context.Persons
@@ -146,7 +162,12 @@ public class PersonService : IPersonService
         return true;
     }
 
-    // Method to delete a person
+    /// <summary>
+    /// Deletes a person from the database.
+    /// </summary>
+    /// <param name="personId">The ID of the person to delete.</param>
+    /// <returns><c>true</c> if the deletion was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="PersonNotFoundException">Thrown when the person is not found.</exception>
     public async Task<bool> DeletePersonAsync(int personId)
     {
         var person = await _context.Persons.FindAsync(personId);
@@ -158,6 +179,12 @@ public class PersonService : IPersonService
         return true;
     }
 
+    /// <summary>
+    /// Retrieves a person by their ID.
+    /// </summary>
+    /// <param name="personId">The ID of the person to retrieve.</param>
+    /// <returns>The <see cref="PersonDto"/> of the retrieved person.</returns>
+    /// <exception cref="PersonNotFoundException">Thrown when the person is not found.</exception>
     public async Task<PersonDto> GetPersonAsync(int personId)
     {
         var person = await _context.Persons
@@ -171,6 +198,11 @@ public class PersonService : IPersonService
         return _mapper.Map<PersonDto>(person);
     }
 
+    /// <summary>
+    /// Retrieves or creates a department based on the department name.
+    /// </summary>
+    /// <param name="departmentName">The name of the department.</param>
+    /// <returns>The <see cref="Department"/> entity.</returns>
     private async Task<Department> GetOrCreateDepartmentAsync(string departmentName)
     {
         var department = await _context.Departments

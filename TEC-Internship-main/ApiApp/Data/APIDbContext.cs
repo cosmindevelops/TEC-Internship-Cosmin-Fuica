@@ -61,17 +61,14 @@ public class APIDbContext : DbContext
             if (!context.Roles.Any(r => r.Name == role.Name))
             {
                 context.Roles.Add(role);
-                Console.WriteLine($"Role {role.Name} added.");
             }
         }
 
         context.SaveChanges();
 
-        // Ensure the roles are saved before proceeding
         var adminRole = context.Roles.FirstOrDefault(r => r.Name == "Admin");
         if (adminRole == null)
         {
-            Console.WriteLine("Admin role could not be found.");
             return;
         }
 
@@ -87,7 +84,6 @@ public class APIDbContext : DbContext
             };
 
             context.Users.Add(adminUser);
-            Console.WriteLine("Admin user added.");
 
             var userRole = new UserRole
             {
@@ -96,10 +92,8 @@ public class APIDbContext : DbContext
             };
 
             context.UserRoles.Add(userRole);
-            Console.WriteLine("Admin user role association added.");
         }
 
         context.SaveChanges();
-        Console.WriteLine("Database seeding completed.");
     }
 }

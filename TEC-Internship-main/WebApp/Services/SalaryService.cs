@@ -25,16 +25,19 @@ public class SalaryService : ISalaryService
         _apiUrl = configuration["ApiSettings:ApiUrl"];
     }
 
+    /// <summary>
+    /// Retrieves all salaries from the API.
+    /// </summary>
+    /// <returns>A list of <see cref="WebApp.Models.SalaryWithFullNameDto"/>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<IEnumerable<WebApp.Models.SalaryWithFullNameDto>> GetAllSalariesAsync()
     {
         try
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiUrl}/salary");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
@@ -52,31 +55,32 @@ public class SalaryService : ISalaryService
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error fetching salaries: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error fetching salaries", ex);
         }
     }
 
+    /// <summary>
+    /// Updates the salary of a person.
+    /// </summary>
+    /// <param name="personId">The ID of the person to update the salary for.</param>
+    /// <param name="newAmount">The new salary amount.</param>
+    /// <returns><c>true</c> if the update was successful; otherwise, <c>false</c>.</returns>
+    /// <exception cref="HttpRequestException">Thrown when an HTTP request error occurs.</exception>
     public async Task<bool> UpdateSalaryAsync(int personId, int newAmount)
     {
         try
         {
             var token = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var request = new HttpRequestMessage(HttpMethod.Put, $"{_apiUrl}/salary/UpdateSalary?personId={personId}&newSalaryAmount={newAmount}");
-            if (!string.IsNullOrEmpty(token))
-            {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
+
+            if (!string.IsNullOrEmpty(token)) request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
         {
-            // Log error
-            Console.WriteLine($"Error updating salary: {ex.Message}");
-            throw;
+            throw new HttpRequestException("Error updating salary", ex);
         }
     }
 }

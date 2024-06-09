@@ -17,6 +17,10 @@ public class PersonController : BaseController
         _personService = personService ?? throw new ArgumentNullException(nameof(personService));
     }
 
+    /// <summary>
+    /// Gets all persons.
+    /// </summary>
+    /// <returns>A list of all persons.</returns>
     [HttpGet]
     public async Task<IActionResult> GetAllPersons()
     {
@@ -24,6 +28,11 @@ public class PersonController : BaseController
         return Ok(persons);
     }
 
+    /// <summary>
+    /// Gets a person by their ID.
+    /// </summary>
+    /// <param name="id">The ID of the person to retrieve.</param>
+    /// <returns>The person with the specified ID.</returns>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetPerson(int id)
     {
@@ -36,6 +45,10 @@ public class PersonController : BaseController
         return Ok(person);
     }
 
+    /// <summary>
+    /// Gets the total number of persons.
+    /// </summary>
+    /// <returns>The total number of persons.</returns>
     [HttpGet("total")]
     public async Task<IActionResult> GetTotalPersons()
     {
@@ -43,6 +56,11 @@ public class PersonController : BaseController
         return Ok(new { TotalPersons = totalPersons });
     }
 
+    /// <summary>
+    /// Creates a new person.
+    /// </summary>
+    /// <param name="personDto">The DTO containing person data.</param>
+    /// <returns>The created person.</returns>
     [HttpPost]
     public async Task<IActionResult> CreatePerson([FromBody] CreateUpdatePersonDto personDto)
     {
@@ -56,6 +74,12 @@ public class PersonController : BaseController
         return CreatedAtAction(nameof(GetPerson), new { id = createdPerson.Id }, createdPerson);
     }
 
+    /// <summary>
+    /// Updates a person's information.
+    /// </summary>
+    /// <param name="id">The ID of the person to update.</param>
+    /// <param name="personDto">The DTO containing updated person data.</param>
+    /// <returns>No content if the update was successful.</returns>
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePerson(int id, [FromBody] CreateUpdatePersonDto personDto)
     {
@@ -74,6 +98,11 @@ public class PersonController : BaseController
         return NoContent();
     }
 
+    /// <summary>
+    /// Deletes a person.
+    /// </summary>
+    /// <param name="id">The ID of the person to delete.</param>
+    /// <returns>No content if the deletion was successful.</returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeletePerson(int id)
     {
