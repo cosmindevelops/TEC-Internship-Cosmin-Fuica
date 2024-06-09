@@ -60,10 +60,12 @@ Before you begin, ensure you have the following installed:
     ```
     
 4. Run both applications:
-    - Go to "Configure Startup Projects..." 
+    - Go to "Configure Startup Projects..."
+
     ![Screenshot1](./screenshots/instruction1.jpg)
     - Select Multiple startup projects
     - Select "Start" for both of the projects
+
     ![Screenshot1](./screenshots/instruction2.jpg)
     - Apply and Ok
         
